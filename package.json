@@ -7,7 +7,8 @@
     "dev": "concurrently -n back,front,admin -c blue,green,magenta \"npm run dev --prefix back\" \"npm run dev --prefix front\" \"npm run dev --prefix admin\"",
     "install:all": "npm i --prefix back && npm i --prefix front && npm i --prefix admin",
     "build:all": "npm run build --prefix front && npm run build --prefix back && npm run build --prefix admin",
-    "seed": "npm run seed --prefix back"
+    "seed": "npm run seed --prefix back",
+    "vercel-build": "npm run build --prefix front && npm run build --prefix admin && mkdir -p front/dist/admin && cp -r admin/dist/* front/dist/admin/"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
