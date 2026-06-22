@@ -1,0 +1,15 @@
+{
+  "name": "2marchi",
+  "private": true,
+  "version": "1.0.0",
+  "description": "2M ARCHI — monorepo (front public site, admin dashboard, back API)",
+  "scripts": {
+    "dev": "concurrently -n back,front,admin -c blue,green,magenta \"npm run dev --prefix back\" \"npm run dev --prefix front\" \"npm run dev --prefix admin\"",
+    "install:all": "npm i --prefix back && npm i --prefix front && npm i --prefix admin",
+    "build:all": "npm run build --prefix front && npm run build --prefix back && npm run build --prefix admin",
+    "seed": "npm run seed --prefix back"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

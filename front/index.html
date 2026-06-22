@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2M ARCHI — Studio d'architecture d'intérieur et design à Tunis</title>
+    <meta name="description" content="2M ARCHI — Studio d'architecture d'intérieur et design. Conception 2D/3D, décoration, mobilier sur mesure et suivi de chantier en Tunisie." />
+    <link rel="canonical" href="%VITE_PUBLIC_URL%/" />
+    <meta name="google-site-verification" content="%VITE_GOOGLE_VERIFICATION%" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="2M ARCHI — Studio d'architecture d'intérieur et design" />
+    <meta property="og:description" content="Studio d'architecture d'intérieur et design : conception 2D/3D, décoration et suivi de chantier." />
+    <meta property="og:image" content="%VITE_PUBLIC_URL%/og-image.jpg" />
+    <meta property="og:url" content="%VITE_PUBLIC_URL%/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter/X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="2M ARCHI — Studio d'architecture d'intérieur et design" />
+    <meta name="twitter:description" content="Studio d'architecture d'intérieur et design en Tunisie." />
+    <meta name="twitter:image" content="%VITE_PUBLIC_URL%/og-image.jpg" />
+
+    <!-- Google Analytics 4 (only loads if ID is set) -->
+    <script>
+      const GA_ID = '%VITE_GA_ID%';
+      if (GA_ID && GA_ID !== '' && GA_ID.indexOf('VITE_') === -1) {
+        const s = document.createElement('script');
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        s.async = true;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+      }
+    </script>
+
+    <!-- Font preload -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#1F1F1F" />
+
+    <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

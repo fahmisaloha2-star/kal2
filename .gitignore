@@ -1,0 +1,14 @@
+node_modules/
+back/uploads/
+back/data/db.json
+**/.env.local
+**/.env.production
+**/.env
+back/dist/
+front/dist/
+admin/dist/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
