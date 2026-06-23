@@ -37,7 +37,7 @@ export const api = {
   getServices: () => fetch(`${BASE}/services`).then(r => r.json()).then(data => Array.isArray(data) ? data : []),
   getTestimonials: () => fetch(`${BASE}/testimonials`).then(r => r.json()).then(data => Array.isArray(data) ? data : []),
   getFaqs: () => fetch(`${BASE}/faqs`).then(r => r.json()).then(data => Array.isArray(data) ? data : []),
-  getContent: () => fetch(`${BASE}/content`).then(r => r.json()),
+  getContent: () => fetch(`${BASE}/content`).then(r => r.json()).then(data => data?.navLabels ? data : { navLabels: {} }),
 
   // Projects
   createProject: (data: unknown) =>
