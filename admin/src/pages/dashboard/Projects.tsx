@@ -7,7 +7,7 @@ import { Plus, Pencil, Trash2, GripVertical, Search, X, Upload, Star } from 'luc
 
 type Category = 'Résidentiel' | 'Commercial' | 'Bureaux' | 'Hôtellerie & Restauration' | 'Santé & Bien-être';
 const CATEGORIES: Category[] = ['Résidentiel', 'Commercial', 'Bureaux', 'Hôtellerie & Restauration', 'Santé & Bien-être'];
-const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL || '').replace('/api', '');
 
 interface Project {
   id: string; title: string; category: string; location: string;

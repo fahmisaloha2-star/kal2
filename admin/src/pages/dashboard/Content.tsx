@@ -11,7 +11,7 @@ interface SiteContent {
   contactTitle: string; contactSubtitle: string;
 }
 
-const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL || '').replace('/api', '');
 
 const TABS = [
   { key: 'hero', label: 'Accueil' },
