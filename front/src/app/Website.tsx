@@ -529,12 +529,12 @@ function HeroSection() {
       </div>
 
       {/* Image panel */}
-      <div className="relative order-1 lg:order-2 min-h-[50vh] lg:min-h-screen overflow-hidden">
+      <div className="relative order-1 lg:order-2 h-[55vw] sm:h-[45vw] lg:h-auto lg:min-h-screen overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: imgY, scale: 1.12 }}>
           <motion.img
             src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1200&h=1600&fit=crop&auto=format"
             alt="Réalisation 2M ARCHI"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
             initial={{ scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }}
           />
         </motion.div>
@@ -1307,7 +1307,7 @@ function Footer() {
           <div>
             <div className="text-[8px] tracking-[0.32em] uppercase mb-6" style={{ fontFamily: FB, color: GOLD }}>Services</div>
             <ul className="space-y-3">
-              {["Plans 2D","Modélisation 3D","Décoration & Design","Dossier Technique","Mobilier sur mesure","Suivi de Chantier"].map(s => (
+              {["Plans 2D","Modélisation 3D","Décoration & Design","Dossier Technique","Suivi de Chantier"].map(s => (
                 <li key={s}><Link to="/services" onClick={() => window.scrollTo(0,0)} className="text-xs text-white/40 hover:text-white transition-colors text-left" style={{ fontFamily: FB, fontWeight: 300 }}>{s}</Link></li>
               ))}
             </ul>
