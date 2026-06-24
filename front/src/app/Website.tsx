@@ -220,8 +220,8 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         </button>
 
         {/* Gallery */}
-        <div className="relative w-full h-[300px] sm:h-[400px] bg-[#1F1F1F]">
-          <img src={images[idx]} alt={`${project.title} — image ${idx + 1}`} className="w-full h-full object-cover" />
+        <div className="relative w-full bg-[#1F1F1F] flex items-center justify-center" style={{ minHeight: '200px', maxHeight: '70vh' }}>
+          <img src={images[idx]} alt={`${project.title} — image ${idx + 1}`} className="w-full h-auto max-h-[70vh] object-contain" />
           {images.length > 1 && (
             <>
               {idx > 0 && (
