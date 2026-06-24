@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { api } from '../../api';
 import { Upload, Save, RotateCcw } from 'lucide-react';
+import { useAdminLang } from './Layout';
 
 interface SiteContent {
   heroTitle: string; heroTagline: string; heroDescription: string;
@@ -108,6 +109,7 @@ function ImageReplace({ src, onReplace, className = '' }: { src: string; onRepla
 }
 
 export default function VisualEditor() {
+  const { lang } = useAdminLang();
   const [content, setContent] = useState<SiteContent>({
     heroTitle: '', heroTagline: '', heroDescription: '',
     aboutTitle: '', aboutBody1: '', aboutBody2: '', aboutBody3: '',
@@ -120,6 +122,9 @@ export default function VisualEditor() {
   const [loaded, setLoaded] = useState(false);
   const [history, setHistory] = useState<SiteContent[]>([]);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const k = (base: string) => lang === 'en' ? `${base}_en` : base;
+  const val = (base: string) => (content[k(base)] as string) || '';
 
   const debouncedSave = useDebouncedSave(content, setStatus);
 
@@ -199,25 +204,25 @@ export default function VisualEditor() {
               <div className="h-px w-8" style={{ backgroundColor: GOLD }} />
               <span className="text-[9px] tracking-[0.45em] uppercase" style={{ color: GOLD }}>Studio d'Architecture d'Intérieur</span>
             </div>
-            <EditableText tag="h1" value={content.heroTitle} onChange={v => update('heroTitle', v)}
+            <EditableText tag="h1" value={val('heroTitle')} onChange={v => update(k('heroTitle'), v)}
               className="text-4xl font-bold text-[#1F1F1F] mb-3 block" />
-            <EditableText tag="p" value={content.heroTagline} onChange={v => update('heroTagline', v)}
+            <EditableText tag="p" value={val('heroTagline')} onChange={v => update(k('heroTagline'), v)}
               className="text-lg mb-4 italic block" style={{ color: '#9B8C7D' } as React.CSSProperties} />
-            <EditableText tag="p" value={content.heroDescription} onChange={v => update('heroDescription', v)}
+            <EditableText tag="p" value={val('heroDescription')} onChange={v => update(k('heroDescription'), v)}
               className="text-sm text-gray-500 leading-loose block" multiline />
           </div>
         </section>
 
         {/* About section */}
         <section ref={el => sectionRefs.current['about'] = el} className="bg-white px-10 py-14 border-b-2 border-dashed border-gray-200">
-          <EditableText tag="h2" value={content.aboutTitle} onChange={v => update('aboutTitle', v)}
+          <EditableText tag="h2" value={val('aboutTitle')} onChange={v => update(k('aboutTitle'), v)}
             className="text-3xl font-bold text-[#1F1F1F] mb-6 block" />
           <div className="space-y-4 max-w-2xl">
-            <EditableText tag="p" value={content.aboutBody1} onChange={v => update('aboutBody1', v)}
+            <EditableText tag="p" value={val('aboutBody1')} onChange={v => update(k('aboutBody1'), v)}
               className="text-sm text-gray-600 leading-loose block" multiline />
-            <EditableText tag="p" value={content.aboutBody2} onChange={v => update('aboutBody2', v)}
+            <EditableText tag="p" value={val('aboutBody2')} onChange={v => update(k('aboutBody2'), v)}
               className="text-sm text-gray-600 leading-loose block" multiline />
-            <EditableText tag="p" value={content.aboutBody3} onChange={v => update('aboutBody3', v)}
+            <EditableText tag="p" value={val('aboutBody3')} onChange={v => update(k('aboutBody3'), v)}
               className="text-sm text-gray-600 leading-loose block" multiline />
           </div>
         </section>
@@ -225,9 +230,9 @@ export default function VisualEditor() {
         {/* Services section */}
         <section ref={el => sectionRefs.current['services'] = el} style={{ backgroundColor: CREAM }} className="px-10 py-14 border-b-2 border-dashed border-gray-200">
           <div className="text-center mb-8">
-            <EditableText tag="h2" value={content.servicesTitle} onChange={v => update('servicesTitle', v)}
+            <EditableText tag="h2" value={val('servicesTitle')} onChange={v => update(k('servicesTitle'), v)}
               className="text-3xl font-bold text-[#1F1F1F] mb-2 block" />
-            <EditableText tag="p" value={content.servicesSubtitle} onChange={v => update('servicesSubtitle', v)}
+            <EditableText tag="p" value={val('servicesSubtitle')} onChange={v => update(k('servicesSubtitle'), v)}
               className="text-sm text-gray-500 block" />
           </div>
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
@@ -245,9 +250,9 @@ export default function VisualEditor() {
         {/* Portfolio section */}
         <section ref={el => sectionRefs.current['portfolio'] = el} className="bg-white px-10 py-14 border-b-2 border-dashed border-gray-200">
           <div className="text-center mb-8">
-            <EditableText tag="h2" value={content.portfolioTitle} onChange={v => update('portfolioTitle', v)}
+            <EditableText tag="h2" value={val('portfolioTitle')} onChange={v => update(k('portfolioTitle'), v)}
               className="text-3xl font-bold text-[#1F1F1F] mb-2 block" />
-            <EditableText tag="p" value={content.portfolioSubtitle} onChange={v => update('portfolioSubtitle', v)}
+            <EditableText tag="p" value={val('portfolioSubtitle')} onChange={v => update(k('portfolioSubtitle'), v)}
               className="text-sm text-gray-500 block" />
           </div>
           <p className="text-center text-xs text-gray-400">Gérez les projets dans la section Réalisations</p>
@@ -256,9 +261,9 @@ export default function VisualEditor() {
         {/* Contact section */}
         <section ref={el => sectionRefs.current['contact'] = el} className="bg-[#1F1F1F] px-10 py-14">
           <div className="text-center mb-6">
-            <EditableText tag="h2" value={content.contactTitle} onChange={v => update('contactTitle', v)}
+            <EditableText tag="h2" value={val('contactTitle')} onChange={v => update(k('contactTitle'), v)}
               className="text-3xl font-bold text-white mb-2 block" />
-            <EditableText tag="p" value={content.contactSubtitle} onChange={v => update('contactSubtitle', v)}
+            <EditableText tag="p" value={val('contactSubtitle')} onChange={v => update(k('contactSubtitle'), v)}
               className="text-sm block" style={{ color: `${GOLD}CC` } as React.CSSProperties} />
           </div>
           <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto text-center text-sm text-gray-300">
