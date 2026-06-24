@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, createContext, useContext } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../../auth';
 import {
   LayoutDashboard, Pencil, Image, Wrench, MessageSquare,
-  HelpCircle, FileText, Settings, LogOut, ExternalLink, Menu, X
+  HelpCircle, FileText, Settings, LogOut, ExternalLink, Menu, X, Globe
 } from 'lucide-react';
+
+export const AdminLangContext = createContext<{ lang: 'fr' | 'en'; setLang: (l: 'fr' | 'en') => void }>({ lang: 'fr', setLang: () => {} });
+
+export function useAdminLang() {
+  return useContext(AdminLangContext);
+}
 
 const FRONT_URL = import.meta.env.VITE_FRONT_URL ?? 'http://localhost:5173';
 
@@ -105,10 +111,12 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 export default function Layout() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [lang, setLang] = useState<'fr' | 'en'>('fr');
   const title = PAGE_TITLES[location.pathname] ?? 'Dashboard';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F8F9FA]">
+    <AdminLangContext.Provider value={{ lang, setLang }}>
+      <div className="flex h-screen overflow-hidden bg-[#F8F9FA]">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex flex-shrink-0">
         <Sidebar />
@@ -137,14 +145,30 @@ export default function Layout() {
             </button>
             <h1 className="font-semibold text-[#1F1F1F] text-sm lg:text-base">{title}</h1>
           </div>
-          <a
-            href={FRONT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#B89B5E] transition-colors"
-          >
-            Voir le site <ExternalLink size={12} />
-          </a>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 bg-gray-100 rounded-md p-0.5">
+              <button
+                onClick={() => setLang('fr')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${lang === 'fr' ? 'bg-white shadow-sm text-[#1F1F1F]' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                FR
+              </button>
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${lang === 'en' ? 'bg-white shadow-sm text-[#1F1F1F]' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                EN
+              </button>
+            </div>
+            <a
+              href={FRONT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#B89B5E] transition-colors"
+            >
+              Voir le site <ExternalLink size={12} />
+            </a>
+          </div>
         </header>
 
         {/* Page content */}
@@ -152,6 +176,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
-    </div>
+      </div>
+    </AdminLangContext.Provider>
   );
 }

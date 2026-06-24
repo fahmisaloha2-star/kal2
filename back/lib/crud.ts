@@ -1,111 +1,78 @@
 import { Router, Request, Response } from "express";
-import { v4 as uuid } from "uuid";
-import { readDb, writeDb, Db } from "../db";
+import { supabase } from "../db";
 import { requireAuth } from "../middleware/auth";
 
-type CollectionKey = "projects" | "services" | "testimonials" | "faqs";
+const router = Router();
 
-interface Entity {
-  id: string;
-  order?: number;
-  [key: string]: unknown;
-}
+type TableName = "projects" | "services" | "testimonials" | "faqs";
 
 interface CrudOptions {
-  /** Optional hook run before an item is removed (e.g. delete its images from disk). */
-  onDelete?: (item: Entity) => void;
+  onDelete?: (item: Record<string, unknown>) => Promise<void> | void;
 }
 
-const sortByOrder = (a: Entity, b: Entity) => (a.order ?? 0) - (b.order ?? 0);
+export function makeCrudRouter(table: TableName, opts: CrudOptions = {}): Router {
+  const r = Router();
 
-/**
- * Builds a CRUD + reorder router for a flat collection in db.json.
- * GET is public; POST / PUT / DELETE / reorder require a valid JWT.
- */
-export function makeCrudRouter(key: CollectionKey, opts: CrudOptions = {}): Router {
-  const router = Router();
-
-  const list = (db: Db) => db[key] as unknown as Entity[];
-
-  // GET / — public
-  router.get("/", (_req: Request, res: Response) => {
-    const db = readDb();
-    res.json([...list(db)].sort(sortByOrder));
+  // GET / — public, returns all rows sorted by order
+  r.get("/", async (_req: Request, res: Response) => {
+    const { data, error } = await supabase
+      .from(table)
+      .select("*")
+      .order("order", { ascending: true });
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
   // POST / — create (auth)
-  router.post("/", requireAuth, (req: Request, res: Response) => {
-    const db = readDb();
-    const items = list(db);
-    const maxOrder = items.reduce((m, it) => Math.max(m, it.order ?? 0), -1);
-    const item: Entity = {
-      ...req.body,
-      id: uuid(),
-      order: typeof req.body?.order === "number" ? req.body.order : maxOrder + 1,
-    };
-    items.push(item);
-    writeDb(db);
-    res.status(201).json(item);
+  r.post("/", requireAuth, async (req: Request, res: Response) => {
+    const body = req.body || {};
+    // Get max order
+    const { data: existing } = await supabase.from(table).select("order").order("order", { ascending: false }).limit(1);
+    const maxOrder = existing?.[0]?.order ?? -1;
+    const newItem = { ...body, order: typeof body.order === "number" ? body.order : maxOrder + 1 };
+    delete newItem.id; // let Supabase generate UUID
+
+    const { data, error } = await supabase.from(table).insert(newItem).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.status(201).json(data);
   });
 
-  // PUT /reorder — reorder by id list (auth). Must be declared before /:id.
-  router.put("/reorder", requireAuth, (req: Request, res: Response) => {
+  // PUT /reorder — bulk reorder (auth)
+  r.put("/reorder", requireAuth, async (req: Request, res: Response) => {
     const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids : [];
-    const db = readDb();
-    const items = list(db);
-    const byId = new Map(items.map((it) => [it.id, it]));
-    const reordered: Entity[] = [];
-    ids.forEach((id, index) => {
-      const it = byId.get(id);
-      if (it) {
-        it.order = index;
-        reordered.push(it);
-        byId.delete(id);
-      }
-    });
-    // Any items not present in `ids` keep their relative order at the end.
-    let tail = reordered.length;
-    [...byId.values()].sort(sortByOrder).forEach((it) => {
-      it.order = tail++;
-      reordered.push(it);
-    });
-    (db as unknown as Record<string, unknown>)[key] = reordered;
-    writeDb(db);
-    res.json(reordered);
+    const updates = ids.map((id, index) =>
+      supabase.from(table).update({ order: index }).eq("id", id)
+    );
+    await Promise.all(updates);
+    const { data, error } = await supabase.from(table).select("*").order("order", { ascending: true });
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
   // PUT /:id — update (auth)
-  router.put("/:id", requireAuth, (req: Request, res: Response) => {
-    const db = readDb();
-    const items = list(db);
-    const idx = items.findIndex((it) => it.id === req.params.id);
-    if (idx === -1) {
-      res.status(404).json({ error: "Introuvable." });
-      return;
-    }
-    items[idx] = { ...items[idx], ...req.body, id: items[idx].id };
-    writeDb(db);
-    res.json(items[idx]);
+  r.put("/:id", requireAuth, async (req: Request, res: Response) => {
+    const body = { ...req.body };
+    delete body.id;
+    const { data, error } = await supabase
+      .from(table)
+      .update(body)
+      .eq("id", req.params.id)
+      .select()
+      .single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
   // DELETE /:id — delete (auth)
-  router.delete("/:id", requireAuth, (req: Request, res: Response) => {
-    const db = readDb();
-    const items = list(db);
-    const idx = items.findIndex((it) => it.id === req.params.id);
-    if (idx === -1) {
-      res.status(404).json({ error: "Introuvable." });
-      return;
+  r.delete("/:id", requireAuth, async (req: Request, res: Response) => {
+    const { data: item } = await supabase.from(table).select("*").eq("id", req.params.id).single();
+    if (item && opts.onDelete) {
+      try { await opts.onDelete(item); } catch { /* best effort */ }
     }
-    const [removed] = items.splice(idx, 1);
-    try {
-      opts.onDelete?.(removed);
-    } catch {
-      /* image cleanup is best-effort */
-    }
-    writeDb(db);
+    const { error } = await supabase.from(table).delete().eq("id", req.params.id);
+    if (error) return res.status(500).json({ error: error.message });
     res.json({ ok: true });
   });
 
-  return router;
+  return r;
 }

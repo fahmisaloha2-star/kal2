@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api';
 import { Upload, X } from 'lucide-react';
+import { useAdminLang } from './Layout';
 
 interface SiteContent {
-  heroTitle: string; heroTagline: string; heroDescription: string;
-  aboutTitle: string; aboutBody1: string; aboutBody2: string; aboutBody3: string;
-  servicesTitle: string; servicesSubtitle: string;
-  portfolioTitle: string; portfolioSubtitle: string;
+  heroTitle: string; heroTitle_en?: string;
+  heroTagline: string; heroTagline_en?: string;
+  heroDescription: string; heroDescription_en?: string;
+  aboutTitle: string; aboutTitle_en?: string;
+  aboutBody1: string; aboutBody1_en?: string;
+  aboutBody2: string; aboutBody2_en?: string;
+  aboutBody3: string; aboutBody3_en?: string;
+  servicesTitle: string; servicesTitle_en?: string;
+  servicesSubtitle: string; servicesSubtitle_en?: string;
+  portfolioTitle: string; portfolioTitle_en?: string;
+  portfolioSubtitle: string; portfolioSubtitle_en?: string;
   beforeAfterBefore: string; beforeAfterAfter: string;
-  contactTitle: string; contactSubtitle: string;
+  contactTitle: string; contactTitle_en?: string;
+  contactSubtitle: string; contactSubtitle_en?: string;
 }
 
-const BASE_URL = (import.meta.env.VITE_API_URL || '').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
 
 const TABS = [
   { key: 'hero', label: 'Accueil' },
@@ -73,12 +82,18 @@ function ImageUpload({ value, onChange, label }: { value: string; onChange: (url
 }
 
 export default function Content() {
+  const { lang } = useAdminLang();
   const [content, setContent] = useState<SiteContent>({
     heroTitle: '', heroTagline: '', heroDescription: '',
+    heroTitle_en: '', heroTagline_en: '', heroDescription_en: '',
     aboutTitle: '', aboutBody1: '', aboutBody2: '', aboutBody3: '',
+    aboutTitle_en: '', aboutBody1_en: '', aboutBody2_en: '', aboutBody3_en: '',
     servicesTitle: '', servicesSubtitle: '',
+    servicesTitle_en: '', servicesSubtitle_en: '',
     portfolioTitle: '', portfolioSubtitle: '', beforeAfterBefore: '', beforeAfterAfter: '',
+    portfolioTitle_en: '', portfolioSubtitle_en: '',
     contactTitle: '', contactSubtitle: '',
+    contactTitle_en: '', contactSubtitle_en: '',
   });
   const [activeTab, setActiveTab] = useState<Tab>('hero');
   const [saving, setSaving] = useState(false);
@@ -108,13 +123,19 @@ export default function Content() {
     );
   }
 
-  const ta = (k: keyof SiteContent, rows = 2) => (
-    <textarea value={content[k] as string} onChange={e => set(k, e.target.value)}
-      className="input w-full resize-none" rows={rows} />
-  );
-  const inp = (k: keyof SiteContent) => (
-    <input value={content[k] as string} onChange={e => set(k, e.target.value)} className="input w-full" />
-  );
+  const ta = (k: keyof SiteContent, rows = 2) => {
+    const key = lang === 'en' ? `${k}_en` as keyof SiteContent : k;
+    return (
+      <textarea value={(content[key] as string) || ''} onChange={e => set(key, e.target.value)}
+        className="input w-full resize-none" rows={rows} />
+    );
+  };
+  const inp = (k: keyof SiteContent) => {
+    const key = lang === 'en' ? `${k}_en` as keyof SiteContent : k;
+    return (
+      <input value={(content[key] as string) || ''} onChange={e => set(key, e.target.value)} className="input w-full" />
+    );
+  };
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -137,7 +158,7 @@ export default function Content() {
             <Field label="Tagline">{inp('heroTagline')}</Field>
             <Field label="Description">{ta('heroDescription', 3)}</Field>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={{ heroTitle: content.heroTitle, heroTagline: content.heroTagline, heroDescription: content.heroDescription }} />
+              <SaveBtn fields={lang === 'en' ? { heroTitle_en: content.heroTitle_en, heroTagline_en: content.heroTagline_en, heroDescription_en: content.heroDescription_en } : { heroTitle: content.heroTitle, heroTagline: content.heroTagline, heroDescription: content.heroDescription }} />
             </div>
           </>
         )}
@@ -148,7 +169,7 @@ export default function Content() {
             <Field label="Paragraphe 2">{ta('aboutBody2', 3)}</Field>
             <Field label="Paragraphe 3 (mission)">{ta('aboutBody3', 3)}</Field>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={{ aboutTitle: content.aboutTitle, aboutBody1: content.aboutBody1, aboutBody2: content.aboutBody2, aboutBody3: content.aboutBody3 }} />
+              <SaveBtn fields={lang === 'en' ? { aboutTitle_en: content.aboutTitle_en, aboutBody1_en: content.aboutBody1_en, aboutBody2_en: content.aboutBody2_en, aboutBody3_en: content.aboutBody3_en } : { aboutTitle: content.aboutTitle, aboutBody1: content.aboutBody1, aboutBody2: content.aboutBody2, aboutBody3: content.aboutBody3 }} />
             </div>
           </>
         )}
@@ -157,7 +178,7 @@ export default function Content() {
             <Field label="Titre section">{inp('servicesTitle')}</Field>
             <Field label="Sous-titre">{inp('servicesSubtitle')}</Field>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={{ servicesTitle: content.servicesTitle, servicesSubtitle: content.servicesSubtitle }} />
+              <SaveBtn fields={lang === 'en' ? { servicesTitle_en: content.servicesTitle_en, servicesSubtitle_en: content.servicesSubtitle_en } : { servicesTitle: content.servicesTitle, servicesSubtitle: content.servicesSubtitle }} />
             </div>
           </>
         )}
@@ -170,7 +191,7 @@ export default function Content() {
               <ImageUpload label="Image Après" value={content.beforeAfterAfter} onChange={v => set('beforeAfterAfter', v)} />
             </div>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={{ portfolioTitle: content.portfolioTitle, portfolioSubtitle: content.portfolioSubtitle, beforeAfterBefore: content.beforeAfterBefore, beforeAfterAfter: content.beforeAfterAfter }} />
+              <SaveBtn fields={lang === 'en' ? { portfolioTitle_en: content.portfolioTitle_en, portfolioSubtitle_en: content.portfolioSubtitle_en, beforeAfterBefore: content.beforeAfterBefore, beforeAfterAfter: content.beforeAfterAfter } : { portfolioTitle: content.portfolioTitle, portfolioSubtitle: content.portfolioSubtitle, beforeAfterBefore: content.beforeAfterBefore, beforeAfterAfter: content.beforeAfterAfter }} />
             </div>
           </>
         )}
@@ -179,7 +200,7 @@ export default function Content() {
             <Field label="Titre section">{inp('contactTitle')}</Field>
             <Field label="Sous-titre">{inp('contactSubtitle')}</Field>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={{ contactTitle: content.contactTitle, contactSubtitle: content.contactSubtitle }} />
+              <SaveBtn fields={lang === 'en' ? { contactTitle_en: content.contactTitle_en, contactSubtitle_en: content.contactSubtitle_en } : { contactTitle: content.contactTitle, contactSubtitle: content.contactSubtitle }} />
             </div>
           </>
         )}

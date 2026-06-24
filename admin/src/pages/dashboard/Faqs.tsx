@@ -5,9 +5,11 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Pencil, Trash2, GripVertical, X } from 'lucide-react';
 
-interface Faq { id: string; question: string; answer: string; order: number; }
+import { useAdminLang } from './Layout';
+
+interface Faq { id: string; question: string; answer: string; order: number; question_en?: string; answer_en?: string; }
 type Form = Omit<Faq, 'id' | 'order'>;
-const EMPTY: Form = { question: '', answer: '' };
+const EMPTY: Form = { question: '', answer: '', question_en: '', answer_en: '' };
 
 function useToast() {
   const [msg, setMsg] = useState('');
@@ -35,7 +37,8 @@ function SortableRow({ faq, onEdit, onDelete }: { faq: Faq; onEdit: (f: Faq) => 
 }
 
 function Modal({ faq, onClose, onSaved }: { faq: Faq | null; onClose: () => void; onSaved: () => void }) {
-  const [form, setForm] = useState<Form>(faq ? { question: faq.question, answer: faq.answer } : EMPTY);
+  const { lang } = useAdminLang();
+  const [form, setForm] = useState<Form>(faq ? { question: faq.question, answer: faq.answer, question_en: faq.question_en ?? '', answer_en: faq.answer_en ?? '' } : EMPTY);
   const [saving, setSaving] = useState(false);
 
   async function save() {
@@ -55,11 +58,11 @@ function Modal({ faq, onClose, onSaved }: { faq: Faq | null; onClose: () => void
         <div className="px-6 py-5 space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Question</label>
-            <input value={form.question} onChange={e => setForm(f => ({ ...f, question: e.target.value }))} className="input w-full" placeholder="Quelle est votre question ?" />
+            <input value={lang === 'en' ? form.question_en : form.question} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'question_en' : 'question']: e.target.value }))} className="input w-full" placeholder="Quelle est votre question ?" />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Réponse</label>
-            <textarea value={form.answer} onChange={e => setForm(f => ({ ...f, answer: e.target.value }))} className="input w-full resize-none" rows={5} />
+            <textarea value={lang === 'en' ? form.answer_en : form.answer} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'answer_en' : 'answer']: e.target.value }))} className="input w-full resize-none" rows={5} />
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">

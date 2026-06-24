@@ -1,27 +1,15 @@
-import fs from "fs";
-import path from "path";
-import type { Project, Service, Testimonial, FaqItem, SiteContent } from "./types";
-import { seed } from "./scripts/seed";
+import path from 'path';
+import dotenv from 'dotenv';
 
-const DB_PATH = path.join(__dirname, "./data/db.json");
+// Load env vars immediately so the Supabase client gets them
+dotenv.config({ path: path.join(__dirname, '.env.local') });
+dotenv.config();
 
-export interface Db {
-  projects: Project[];
-  services: Service[];
-  testimonials: Testimonial[];
-  faqs: FaqItem[];
-  content: SiteContent;
-}
+import { createClient } from '@supabase/supabase-js';
 
-export function readDb(): Db {
-  if (!fs.existsSync(DB_PATH)) {
-    // Auto-seed on first run.
-    seed();
-  }
-  return JSON.parse(fs.readFileSync(DB_PATH, "utf-8")) as Db;
-}
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export function writeDb(data: Db): void {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false },
+});

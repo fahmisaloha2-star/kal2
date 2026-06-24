@@ -57,7 +57,7 @@ export default function Overview() {
             <div key={p.id} className="flex items-center gap-4 px-5 py-3">
               <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
                 {(p.thumbnails?.[0] ?? p.images?.[0]) ? (
-                  <img src={`${(import.meta.env.VITE_API_URL || '').replace('/api', '')}${p.thumbnails?.[0] ?? p.images?.[0]}`}
+                  <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '')}${p.thumbnails?.[0] ?? p.images?.[0]}`}
                     alt={p.title} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">

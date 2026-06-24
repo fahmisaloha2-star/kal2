@@ -11,7 +11,7 @@ import {
   Home, Building2, Package, Briefcase, Store, Dumbbell,
   Sparkles, Utensils, Coffee, Tag, LayoutTemplate, Stethoscope,
 } from "lucide-react";
-import { useStore, type Project } from "./store";
+import { useStore, useI18n, type Project } from "./store";
 import { api } from "../api";
 import { trackEvent } from "../analytics";
 
@@ -152,6 +152,7 @@ function BeforeAfterSlider({ before, after }: { before: string; after: string })
 // ─── Project Detail Modal ──────────────────────────────────────────────────────
 
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  const { lang, t } = useI18n();
   const [idx, setIdx] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const images = project.images.length ? project.images : [""];
@@ -247,7 +248,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           {project.featured && (
             <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[8px] tracking-[0.18em] uppercase text-white"
               style={{ fontFamily: FB, fontWeight: 600, backgroundColor: GOLD }}>
-              À la une
+              {lang === 'en' ? 'Featured' : 'À la une'}
             </div>
           )}
         </div>
@@ -255,11 +256,13 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         {/* Details */}
         <div className="p-7 sm:p-10">
           <div className="text-[9px] mb-3 tracking-[0.28em] uppercase" style={{ fontFamily: FB, color: GOLD }}>
-            {project.category} · {project.location} · {project.year}
+            {t(project.category as string, project.category_en)} · {t(project.location, project.location_en)} · {project.year}
           </div>
-          <h3 className="text-4xl sm:text-5xl text-[#1F1F1F] mb-5" style={{ fontFamily: FD }}>{project.title}</h3>
-          <p className="text-sm text-[#4A4A4A] leading-loose mb-8" style={{ fontFamily: FB, fontWeight: 300 }}>{project.description}</p>
-          <PrimaryBtn onClick={goContact}>Nous contacter <ArrowRight size={14} /></PrimaryBtn>
+          <h3 className="text-4xl sm:text-5xl text-[#1F1F1F] mb-5" style={{ fontFamily: FD }}>{t(project.title, project.title_en)}</h3>
+          <p className="text-sm text-[#4A4A4A] leading-loose mb-8 whitespace-pre-wrap" style={{ fontFamily: FB, fontWeight: 300 }}>{t(project.description, project.description_en)}</p>
+          <PrimaryBtn onClick={goContact}>
+            {lang === 'en' ? 'Contact us' : 'Nous contacter'} <ArrowRight size={14} />
+          </PrimaryBtn>
         </div>
       </motion.div>
     </motion.div>
@@ -278,17 +281,18 @@ const NAV_ITEMS = [
 
 function Navbar() {
   const { state: { content } } = useStore();
+  const { lang, t, setLanguage } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   const labelFor = (id: string): string => {
     const map: Record<string, string> = {
-      hero: content.navLabels.accueil,
-      about: content.navLabels.about,
-      services: content.navLabels.services,
-      portfolio: content.navLabels.portfolio,
-      contact: content.navLabels.contact,
+      hero: t(content.navLabels.accueil, content.navLabels_en?.accueil),
+      about: t(content.navLabels.about, content.navLabels_en?.about),
+      services: t(content.navLabels.services, content.navLabels_en?.services),
+      portfolio: t(content.navLabels.portfolio, content.navLabels_en?.portfolio),
+      contact: t(content.navLabels.contact, content.navLabels_en?.contact),
     };
     return map[id] ?? id;
   };
@@ -368,6 +372,16 @@ function Navbar() {
             })}
           </div>
 
+          <div className="hidden lg:flex items-center gap-4">
+            <button
+              onClick={() => setLanguage(lang === 'fr' ? 'en' : 'fr')}
+              className="text-xs font-semibold tracking-widest uppercase hover:opacity-70 transition-opacity"
+              style={{ fontFamily: FB, color: "#1F1F1F" }}
+            >
+              {lang === 'fr' ? 'FR' : 'EN'}
+            </button>
+          </div>
+
           {/* Mobile: hamburger */}
           <button
             onClick={() => setMobileOpen(true)}
@@ -376,6 +390,14 @@ function Navbar() {
             style={{ color: "#1F1F1F" }}
           >
             <Menu size={22} />
+          </button>
+          
+          <button
+            onClick={() => setLanguage(lang === 'fr' ? 'en' : 'fr')}
+            className="lg:hidden text-xs font-semibold tracking-widest uppercase hover:opacity-70 transition-opacity"
+            style={{ fontFamily: FB, color: "#1F1F1F" }}
+          >
+            {lang === 'fr' ? 'FR' : 'EN'}
           </button>
         </div>
       </nav>
@@ -451,6 +473,7 @@ function Navbar() {
 
 function HeroSection() {
   const { state: { content } } = useStore();
+  const { lang, t } = useI18n();
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "5%"]);
@@ -474,17 +497,17 @@ function HeroSection() {
           </div>
           <div className="flex items-center gap-3 mb-8">
             <div className="h-px w-10" style={{ backgroundColor: GOLD }} />
-            <span className="text-[9px] tracking-[0.45em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Studio d&apos;Architecture d&apos;Intérieur</span>
+            <span className="text-[9px] tracking-[0.45em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Interior Design Studio' : 'Studio d\'Architecture d\'Intérieur'}</span>
           </div>
           <p className="text-lg md:text-xl mb-6 tracking-[0.1em]" style={{ fontFamily: FD, color: TAUPE, fontStyle: "italic" }}>
-            {content.heroTagline}
+            {t(content.heroTagline, content.heroTagline_en)}
           </p>
           <p className="text-sm text-[#4A4A4A] leading-loose mb-10 max-w-md" style={{ fontFamily: FB, fontWeight: 300 }}>
-            {content.heroDescription}
+            {t(content.heroDescription, content.heroDescription_en)}
           </p>
           <div className="flex flex-wrap gap-4">
             <PrimaryBtn onClick={() => cta("Découvrir nos réalisations", "/portfolio")}>
-              Découvrir nos réalisations <ArrowRight size={14} />
+              {lang === 'en' ? 'Discover our work' : 'Découvrir nos réalisations'} <ArrowRight size={14} />
             </PrimaryBtn>
           </div>
         </motion.div>
@@ -493,9 +516,9 @@ function HeroSection() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.9 }}
           className="flex gap-10 pt-12 mt-12 border-t border-[#DDD7D0]">
           {[
-            { n: content.statsProjects, l: "Projets réalisés" },
-            { n: content.statsYears, l: "Années d'expérience" },
-            { n: content.statsClients, l: "Clients satisfaits" },
+            { n: content.statsProjects, l: lang === 'en' ? "Completed Projects" : "Projets réalisés" },
+            { n: content.statsYears, l: lang === 'en' ? "Years of experience" : "Années d'expérience" },
+            { n: content.statsClients, l: lang === 'en' ? "Satisfied Clients" : "Clients satisfaits" },
           ].map(s => (
             <div key={s.l}>
               <div className="text-2xl text-[#1F1F1F]" style={{ fontFamily: FD, fontWeight: 700, color: GOLD }}><CountUp value={s.n} /></div>
@@ -526,7 +549,7 @@ function HeroSection() {
       {/* Scroll cue */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
         className="absolute bottom-8 left-8 hidden lg:flex flex-col items-center gap-2">
-        <span className="text-[8px] tracking-[0.32em] uppercase" style={{ fontFamily: FB, color: "#6D6D6D" }}>Défiler</span>
+        <span className="text-[8px] tracking-[0.32em] uppercase" style={{ fontFamily: FB, color: "#6D6D6D" }}>{lang === 'en' ? 'Scroll' : 'Défiler'}</span>
         <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}
           className="w-px h-10" style={{ background: `linear-gradient(to bottom, ${GOLD}, transparent)` }} />
       </motion.div>
@@ -538,6 +561,7 @@ function HeroSection() {
 
 function ServicesPreview() {
   const { state: { services } } = useStore();
+  const { lang, t } = useI18n();
   const sorted = [...services].sort((a, b) => a.order - b.order).slice(0, 3);
   const navigate = useNavigate();
   const go = () => navigate("/services");
@@ -547,11 +571,11 @@ function ServicesPreview() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-12">
           <div>
-            <GoldRule text="Nos expertises" />
-            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Nos Services</h2>
+            <GoldRule text={lang === 'en' ? "Our expertise" : "Nos expertises"} />
+            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{lang === 'en' ? "Our Services" : "Nos Services"}</h2>
           </div>
           <button onClick={go} className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase hover:gap-3 transition-all" style={{ fontFamily: FB, color: GOLD }}>
-            Voir tous les services <ArrowRight size={13} />
+            {lang === 'en' ? "View all services" : "Voir tous les services"} <ArrowRight size={13} />
           </button>
         </FadeIn>
         <div className="grid sm:grid-cols-3 gap-6">
@@ -564,8 +588,8 @@ function ServicesPreview() {
                     style={{ backgroundColor: `${GOLD}18`, border: `1px solid ${GOLD}35` }}>
                     <Icon size={17} style={{ color: GOLD }} />
                   </div>
-                  <h3 className="text-base text-[#1F1F1F] mb-2 leading-snug" style={{ fontFamily: FD }}>{s.title}</h3>
-                  <p className="text-xs text-[#6D6D6D] leading-loose line-clamp-3" style={{ fontFamily: FB, fontWeight: 300 }}>{s.description}</p>
+                  <h3 className="text-base text-[#1F1F1F] mb-2 leading-snug" style={{ fontFamily: FD }}>{t(s.title, s.title_en)}</h3>
+                  <p className="text-xs text-[#6D6D6D] leading-loose line-clamp-3" style={{ fontFamily: FB, fontWeight: 300 }}>{t(s.description, s.description_en)}</p>
                 </div>
               </FadeIn>
             );
@@ -580,6 +604,7 @@ function ServicesPreview() {
 
 function FeaturedCarousel() {
   const { state: { projects } } = useStore();
+  const { lang, t } = useI18n();
   const featured = projects.filter(p => p.featured && p.published).sort((a, b) => a.order - b.order);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
   const [current, setCurrent] = useState(0);
@@ -597,8 +622,8 @@ function FeaturedCarousel() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-12">
           <div>
-            <GoldRule text="Sélection" />
-            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Réalisations à la une</h2>
+            <GoldRule text={lang === 'en' ? "Selection" : "Sélection"} />
+            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{lang === 'en' ? "Featured Projects" : "Réalisations à la une"}</h2>
           </div>
           <div className="flex gap-2">
             <button onClick={() => emblaApi?.scrollPrev()} aria-label="Précédent" className="w-10 h-10 rounded-full border border-[#DDD7D0] bg-white flex items-center justify-center text-[#4A4A4A] hover:border-[#B89B5E] hover:text-[#B89B5E] transition-colors">
@@ -621,8 +646,8 @@ function FeaturedCarousel() {
                   </div>
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-lg text-[#1F1F1F] mb-1" style={{ fontFamily: FD }}>{p.title}</h3>
-                      <p className="text-xs text-[#6D6D6D]" style={{ fontFamily: FB }}>{p.category} · {p.location} · {p.year}</p>
+                      <h3 className="text-lg text-[#1F1F1F] mb-1" style={{ fontFamily: FD }}>{t(p.title, p.title_en)}</h3>
+                      <p className="text-xs text-[#6D6D6D]" style={{ fontFamily: FB }}>{t(p.category as string, p.category_en)} · {t(p.location, p.location_en)} · {p.year}</p>
                     </div>
                     <ArrowRight size={16} className="mt-1.5 group-hover:translate-x-1 transition-transform flex-shrink-0" style={{ color: GOLD }} />
                   </div>
@@ -651,6 +676,7 @@ function FeaturedCarousel() {
 
 function AboutSection() {
   const { state: { content } } = useStore();
+  const { lang, t } = useI18n();
   const navigate = useNavigate();
   return (
     <section id="about" className="py-24 md:py-32 bg-white">
@@ -670,25 +696,25 @@ function AboutSection() {
             <FadeIn>
               <div className="flex items-center gap-3 mb-7">
                 <div className="h-px w-10" style={{ backgroundColor: GOLD }} />
-                <span className="text-[9px] tracking-[0.42em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Notre histoire</span>
+                <span className="text-[9px] tracking-[0.42em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Our Story' : 'Notre histoire'}</span>
               </div>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-8 leading-snug" style={{ fontFamily: FD }}>{content.aboutTitle}</h2>
+              <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-8 leading-snug" style={{ fontFamily: FD }}>{t(content.aboutTitle, content.aboutTitle_en)}</h2>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <p className="text-sm text-[#4A4A4A] leading-loose mb-5" style={{ fontFamily: FB, fontWeight: 300 }}>{content.aboutBody1}</p>
+              <p className="text-sm text-[#4A4A4A] leading-loose mb-5" style={{ fontFamily: FB, fontWeight: 300 }}>{t(content.aboutBody1, content.aboutBody1_en)}</p>
             </FadeIn>
             <FadeIn delay={0.3}>
-              <p className="text-sm text-[#4A4A4A] leading-loose mb-5" style={{ fontFamily: FB, fontWeight: 300 }}>{content.aboutBody2}</p>
+              <p className="text-sm text-[#4A4A4A] leading-loose mb-5" style={{ fontFamily: FB, fontWeight: 300 }}>{t(content.aboutBody2, content.aboutBody2_en)}</p>
             </FadeIn>
             <FadeIn delay={0.35}>
-              <p className="text-sm text-[#4A4A4A] leading-loose mb-10" style={{ fontFamily: FB, fontWeight: 300 }}>{content.aboutBody3}</p>
+              <p className="text-sm text-[#4A4A4A] leading-loose mb-10" style={{ fontFamily: FB, fontWeight: 300 }}>{t(content.aboutBody3, content.aboutBody3_en)}</p>
             </FadeIn>
             <FadeIn delay={0.4}>
               <div className="grid grid-cols-3 gap-5 pt-8 border-t border-[#DDD7D0]">
                 {[
-                  { n: content.statsProjects, l: "Projets" }, { n: content.statsYears, l: "Années" }, { n: content.statsClients, l: "Satisfaction" },
+                  { n: content.statsProjects, l: lang === 'en' ? "Projects" : "Projets" }, { n: content.statsYears, l: lang === 'en' ? "Years" : "Années" }, { n: content.statsClients, l: lang === 'en' ? "Satisfaction" : "Satisfaction" },
                 ].map(s => (
                   <div key={s.l}>
                     <div className="text-3xl mb-1" style={{ fontFamily: FD, fontWeight: 700, color: GOLD }}><CountUp value={s.n} /></div>
@@ -699,7 +725,7 @@ function AboutSection() {
             </FadeIn>
             <FadeIn delay={0.5} className="mt-8">
               <PrimaryBtn onClick={() => navigate("/contact")}>
-                Nous contacter <ArrowRight size={14} />
+                {lang === 'en' ? 'Contact Us' : 'Nous contacter'} <ArrowRight size={14} />
               </PrimaryBtn>
             </FadeIn>
           </div>
@@ -721,6 +747,7 @@ const SERVICE_IMAGES = [
 
 function ServicesSection() {
   const { state: { services, content } } = useStore();
+  const { lang, t } = useI18n();
   const sorted = [...services].sort((a, b) => a.order - b.order);
   const navigate = useNavigate();
 
@@ -729,8 +756,8 @@ function ServicesSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
           <GoldRule text="Expertise" />
-          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.servicesTitle}</h2>
-          <p className="text-sm text-[#6D6D6D] max-w-xl mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{content.servicesSubtitle}</p>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{t(content.servicesTitle, content.servicesTitle_en)}</h2>
+          <p className="text-sm text-[#6D6D6D] max-w-xl mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{t(content.servicesSubtitle, content.servicesSubtitle_en)}</p>
         </FadeIn>
         <div className="space-y-20">
           {sorted.map((s, i) => {
@@ -751,11 +778,11 @@ function ServicesSection() {
                     <div className="text-[9px] mb-4 tracking-[0.3em] uppercase" style={{ fontFamily: FB, color: GOLD }}>
                       {String(i + 1).padStart(2, "0")} / {String(sorted.length).padStart(2, "0")}
                     </div>
-                    <h3 className="text-4xl md:text-5xl text-[#1F1F1F] mb-5 leading-snug" style={{ fontFamily: FD }}>{s.title}</h3>
-                    <p className="text-sm text-[#4A4A4A] leading-loose mb-7" style={{ fontFamily: FB, fontWeight: 300 }}>{s.description}</p>
+                    <h3 className="text-4xl md:text-5xl text-[#1F1F1F] mb-5 leading-snug" style={{ fontFamily: FD }}>{t(s.title, s.title_en)}</h3>
+                    <p className="text-sm text-[#4A4A4A] leading-loose mb-7" style={{ fontFamily: FB, fontWeight: 300 }}>{t(s.description, s.description_en)}</p>
                     <button onClick={() => navigate("/contact")}
                       className="inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase group" style={{ fontFamily: FB, fontWeight: 600, color: GOLD }}>
-                      En savoir plus
+                      {lang === 'en' ? 'Learn more' : 'En savoir plus'}
                       <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -787,14 +814,15 @@ const DOMAINES = [
 ];
 
 function DomainesSection() {
+  const { lang } = useI18n();
   return (
     <section id="domaines" className="py-24 md:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-16">
-          <GoldRule text="Secteurs d'intervention" />
-          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>Nos Domaines d'Intervention</h2>
+          <GoldRule text={lang === 'en' ? "Sectors" : "Secteurs d'intervention"} />
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>{lang === 'en' ? "Our Areas of Expertise" : "Nos Domaines d'Intervention"}</h2>
           <p className="text-sm text-[#6D6D6D] max-w-xl mx-auto" style={{ fontFamily: FB, fontWeight: 300 }}>
-            2M ARCHI intervient dans tous les secteurs pour concevoir des espaces fonctionnels, esthétiques et adaptés à chaque usage.
+            {lang === 'en' ? "2M ARCHI intervenes in all sectors to design functional, aesthetic spaces adapted to each use." : "2M ARCHI intervient dans tous les secteurs pour concevoir des espaces fonctionnels, esthétiques et adaptés à chaque usage."}
           </p>
         </FadeIn>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -808,7 +836,20 @@ function DomainesSection() {
                   <Icon size={18} style={{ color: GOLD }} />
                 </div>
                 <span className="text-xs font-medium text-[#1F1F1F] leading-snug" style={{ fontFamily: FB }}>
-                  {label}
+                  {lang === 'en' ? (
+                    label === "Maisons et Villas" ? "Houses & Villas" :
+                    label === "Appartements et Lofts" ? "Apartments & Lofts" :
+                    label === "Espaces modulaires et conteneurs" ? "Modular Spaces & Containers" :
+                    label === "Bureaux et espaces professionnels" ? "Offices & Workspaces" :
+                    label === "Locaux commerciaux" ? "Commercial Spaces" :
+                    label === "Salles de sport" ? "Gyms & Fitness Centers" :
+                    label === "Centres esthétiques et spas" ? "Beauty Centers & Spas" :
+                    label === "Hôtels et restaurants" ? "Hotels & Restaurants" :
+                    label === "Cafés et salons de thé" ? "Cafes & Tea Rooms" :
+                    label === "Boutiques et showrooms" ? "Boutiques & Showrooms" :
+                    label === "Stands d'exposition" ? "Exhibition Stands" :
+                    label === "Cabinets médicaux et paramédicaux" ? "Medical Clinics" : label
+                  ) : label}
                 </span>
               </div>
             </FadeIn>
@@ -826,6 +867,7 @@ const FILTERS: Filter[] = ["Tous", "Résidentiel", "Commercial", "Bureaux", "Hô
 
 function PortfolioSection() {
   const { state: { projects, content } } = useStore();
+  const { lang, t } = useI18n();
   const [filter, setFilter] = useState<Filter>("Tous");
   const [modalProject, setModalProject] = useState<Project | null>(null);
 
@@ -840,22 +882,32 @@ function PortfolioSection() {
     <section id="portfolio" className="py-24 md:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-16">
-          <GoldRule text="Réalisations" />
-          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>{content.portfolioTitle}</h2>
+          <GoldRule text={lang === 'en' ? 'Portfolio' : 'Réalisations'} />
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>{t(content.portfolioTitle, content.portfolioTitle_en)}</h2>
           <p className="text-sm text-[#6D6D6D] max-w-md mx-auto" style={{ fontFamily: FB, fontWeight: 300 }}>
-            {content.portfolioSubtitle}
+            {t(content.portfolioSubtitle, content.portfolioSubtitle_en)}
           </p>
         </FadeIn>
 
         {/* Filters */}
         <FadeIn className="flex flex-wrap justify-center gap-2 mb-12">
-          {FILTERS.map(f => (
-            <button key={f} onClick={() => onFilter(f)}
-              className={`px-5 py-2.5 text-[9px] tracking-[0.2em] uppercase rounded-full transition-all ${filter === f ? "text-white shadow-md" : "text-[#4A4A4A] border border-[#DDD7D0] hover:border-[#B89B5E] hover:text-[#B89B5E]"}`}
-              style={{ fontFamily: FB, fontWeight: filter === f ? 600 : 400, backgroundColor: filter === f ? GOLD : "transparent" }}>
-              {f}
-            </button>
-          ))}
+          {FILTERS.map(f => {
+            const translated = lang === 'en' ? (
+              f === "Tous" ? "All" :
+              f === "Résidentiel" ? "Residential" :
+              f === "Commercial" ? "Commercial" :
+              f === "Bureaux" ? "Offices" :
+              f === "Hôtellerie & Restauration" ? "Hospitality" :
+              f === "Santé & Bien-être" ? "Health & Wellness" : f
+            ) : f;
+            return (
+              <button key={f} onClick={() => onFilter(f)}
+                className={`px-5 py-2.5 text-[9px] tracking-[0.2em] uppercase rounded-full transition-all ${filter === f ? "text-white shadow-md" : "text-[#4A4A4A] border border-[#DDD7D0] hover:border-[#B89B5E] hover:text-[#B89B5E]"}`}
+                style={{ fontFamily: FB, fontWeight: filter === f ? 600 : 400, backgroundColor: filter === f ? GOLD : "transparent" }}>
+                {translated}
+              </button>
+            );
+          })}
         </FadeIn>
 
         {/* Masonry grid */}
@@ -873,9 +925,9 @@ function PortfolioSection() {
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
                   <span className="text-[8px] tracking-[0.25em] uppercase" style={{ fontFamily: FB, color: GOLD }}>
-                    {p.category} · {p.location} · {p.year}
+                    {t(p.category as string, p.category_en)} · {t(p.location, p.location_en)} · {p.year}
                   </span>
-                  <div className="text-white text-lg mt-0.5" style={{ fontFamily: FD }}>{p.title}</div>
+                  <div className="text-white text-lg mt-0.5" style={{ fontFamily: FD }}>{t(p.title, p.title_en)}</div>
                 </div>
                 {p.featured && (
                   <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[8px] tracking-[0.18em] uppercase text-white"
@@ -910,7 +962,7 @@ function PortfolioSection() {
 
 // ─── Process (Timeline) ───────────────────────────────────────────────────────
 
-const STEPS = [
+const STEPS_FR = [
   { n: "01", title: "Analyse des besoins", desc: "Rencontre initiale pour comprendre vos attentes, contraintes et ambitions. Définition du budget, du calendrier et des orientations du projet." },
   { n: "02", title: "Conception et plans 2D", desc: "Création des plans d'aménagement détaillés avec optimisation des espaces et des flux selon les besoins spécifiques du projet." },
   { n: "03", title: "Modélisation 3D", desc: "Rendus réalistes permettant de visualiser précisément votre espace avant les travaux et de valider chaque choix esthétique." },
@@ -919,20 +971,32 @@ const STEPS = [
   { n: "06", title: "Livraison finale du projet", desc: "Remise d'un espace parfaitement réalisé conforme aux plans validés, accompagnée d'un bilan complet et d'une visite commentée." },
 ];
 
+const STEPS_EN = [
+  { n: "01", title: "Needs Analysis", desc: "Initial meeting to understand your expectations, constraints, and ambitions. Defining budget, timeline, and project direction." },
+  { n: "02", title: "2D Plans & Design", desc: "Creation of detailed layout plans optimizing spaces and flows according to the project's specific needs." },
+  { n: "03", title: "3D Modeling", desc: "Realistic renderings allowing you to precisely visualize your space before work begins and validate every aesthetic choice." },
+  { n: "04", title: "Technical Documentation", desc: "Preparation of all technical documents necessary for execution: working drawings, specifications, and contractor selection." },
+  { n: "05", title: "Coordination & Follow-up", desc: "Rigorous management and control of the site at each stage: coordinating trades, quality control, and meeting deadlines." },
+  { n: "06", title: "Final Delivery", desc: "Handover of a perfectly realized space compliant with approved plans, accompanied by a full review and guided tour." },
+];
+
 function ProcessSection() {
+  const { lang } = useI18n();
+  const steps = lang === 'en' ? STEPS_EN : STEPS_FR;
+
   return (
     <section id="process" className="py-24 md:py-32" style={{ backgroundColor: "#EFEAE4" }}>
       <div className="max-w-4xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
-          <GoldRule text="Notre méthode" />
-          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Notre Méthode de Travail</h2>
+          <GoldRule text={lang === 'en' ? 'Our Method' : 'Notre méthode'} />
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{lang === 'en' ? 'Our Working Method' : 'Notre Méthode de Travail'}</h2>
         </FadeIn>
         <div className="relative">
           {/* Central vertical line */}
           <div className="absolute left-1/2 top-0 bottom-0 w-px hidden lg:block" style={{ backgroundColor: "#DDD7D0", transform: "translateX(-50%)" }} />
 
           <div className="space-y-8 lg:space-y-0">
-            {STEPS.map((step, i) => {
+            {steps.map((step, i) => {
               const even = i % 2 === 0;
               return (
                 <FadeIn key={step.n} delay={i * 0.1} className="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-12">
@@ -940,7 +1004,7 @@ function ProcessSection() {
                   <div className={`${even ? "lg:text-right" : "lg:order-2"}`}>
                     {even ? (
                       <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
-                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Étape {step.n}</div>
+                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
                         <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
                         <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
                       </div>
@@ -959,7 +1023,7 @@ function ProcessSection() {
                   <div className={`${!even ? "" : "lg:order-2"} mt-4 lg:mt-0`}>
                     {!even ? (
                       <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
-                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Étape {step.n}</div>
+                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
                         <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
                         <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
                       </div>
@@ -999,12 +1063,13 @@ const INSTA_IMGS = [
 
 function InstagramSection() {
   const { state: { content } } = useStore();
+  const { lang } = useI18n();
   return (
     <section className="py-24" style={{ backgroundColor: "#EFEAE4" }}>
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-12">
           <GoldRule text="Instagram" />
-          <h2 className="text-5xl text-[#1F1F1F] mb-2" style={{ fontFamily: FD }}>Suivez 2M ARCHI sur Instagram</h2>
+          <h2 className="text-5xl text-[#1F1F1F] mb-2" style={{ fontFamily: FD }}>{lang === 'en' ? 'Follow 2M ARCHI on Instagram' : 'Suivez 2M ARCHI sur Instagram'}</h2>
           <p className="text-xs text-[#6D6D6D]" style={{ fontFamily: FB }}>@2m.archi</p>
         </FadeIn>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8">
@@ -1027,7 +1092,7 @@ function InstagramSection() {
             onClick={() => trackEvent("social_click", { platform: "Instagram" })}
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border text-sm transition-all hover:shadow-md"
             style={{ fontFamily: FB, fontWeight: 500, borderColor: GOLD, color: GOLD }}>
-            <Instagram size={16} /> Suivre sur Instagram
+            <Instagram size={16} /> {lang === 'en' ? 'Follow on Instagram' : 'Suivre sur Instagram'}
           </a>
         </FadeIn>
       </div>
@@ -1039,13 +1104,14 @@ function InstagramSection() {
 
 function FaqSection() {
   const { state: { faqs } } = useStore();
+  const { lang, t } = useI18n();
   const [open, setOpen] = useState<string | null>(null);
   const sorted = [...faqs].sort((a, b) => a.order - b.order);
   return (
     <section id="faq" className="py-24 md:py-32 bg-white">
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center mb-16">
-          <GoldRule text="Questions fréquentes" />
+          <GoldRule text={lang === 'en' ? 'Frequently Asked Questions' : 'Questions fréquentes'} />
           <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>FAQ</h2>
         </FadeIn>
         <div className="space-y-3">
@@ -1056,7 +1122,7 @@ function FaqSection() {
                   aria-expanded={open === faq.id}
                   className="w-full flex items-center justify-between px-6 py-5 text-left group">
                   <span className="text-sm text-[#1F1F1F] group-hover:text-[#B89B5E] transition-colors pr-6 leading-snug" style={{ fontFamily: FD }}>
-                    {faq.question}
+                    {t(faq.question, faq.question_en)}
                   </span>
                   <motion.div animate={{ rotate: open === faq.id ? 180 : 0 }} transition={{ duration: 0.3 }} className="flex-shrink-0">
                     <ChevronDown size={17} style={{ color: open === faq.id ? GOLD : "#6D6D6D" }} />
@@ -1064,7 +1130,7 @@ function FaqSection() {
                 </button>
                 {open === faq.id && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} transition={{ duration: 0.3 }} className="overflow-hidden">
-                    <p className="px-6 pb-5 text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{faq.answer}</p>
+                    <p className="px-6 pb-5 text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{t(faq.answer, faq.answer_en)}</p>
                   </motion.div>
                 )}
               </div>
@@ -1080,6 +1146,7 @@ function FaqSection() {
 
 function ContactSection() {
   const { state: { content } } = useStore();
+  const { lang, t } = useI18n();
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "", website: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
 
@@ -1114,22 +1181,22 @@ function ContactSection() {
     <section id="contact" className="py-24 md:py-32" style={{ backgroundColor: "#EFEAE4" }}>
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
-          <GoldRule text="Parlons de votre projet" />
-          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.contactTitle}</h2>
-          <p className="text-sm text-[#6D6D6D] max-w-md mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{content.contactSubtitle}</p>
+          <GoldRule text={lang === 'en' ? 'Let\'s talk about your project' : 'Parlons de votre projet'} />
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{t(content.contactTitle, content.contactTitle_en)}</h2>
+          <p className="text-sm text-[#6D6D6D] max-w-md mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{t(content.contactSubtitle, content.contactSubtitle_en)}</p>
         </FadeIn>
         <div className="grid lg:grid-cols-2 gap-16 xl:gap-24">
           <FadeIn>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid sm:grid-cols-2 gap-4">
-                <input type="text" placeholder="Votre nom" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Votre nom" required />
+                <input type="text" placeholder={lang === 'en' ? "Your Name" : "Votre nom"} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Votre nom" required />
                 <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Email" required />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <input type="tel" placeholder="Téléphone" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Téléphone" />
-                <input type="text" placeholder="Sujet" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Sujet" />
+                <input type="tel" placeholder={lang === 'en' ? "Phone" : "Téléphone"} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Téléphone" />
+                <input type="text" placeholder={lang === 'en' ? "Subject" : "Sujet"} value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} className={fieldCls} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Sujet" />
               </div>
-              <textarea placeholder="Décrivez votre projet..." value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={5}
+              <textarea placeholder={lang === 'en' ? "Describe your project..." : "Décrivez votre projet..."} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={5}
                 className={`${fieldCls} resize-none`} style={{ fontFamily: FB, fontWeight: 300 }} aria-label="Votre message" required />
 
               {/* Honeypot — hidden from real users, catches bots */}
@@ -1138,12 +1205,12 @@ function ContactSection() {
                 style={{ display: "none" }} />
 
               <PrimaryBtn type="submit">
-                {status === "loading" ? "Envoi en cours..." : status === "sent" ? <><Check size={14} /> Demande envoyée ✓</> : <><Send size={14} /> Envoyer la demande</>}
+                {status === "loading" ? (lang === 'en' ? "Sending..." : "Envoi en cours...") : status === "sent" ? <><Check size={14} /> {lang === 'en' ? "Request sent" : "Demande envoyée"} ✓</> : <><Send size={14} /> {lang === 'en' ? "Send Request" : "Envoyer la demande"}</>}
               </PrimaryBtn>
 
               {status === "error" && (
                 <p className="text-sm" style={{ fontFamily: FB, color: "#C0392B" }}>
-                  Une erreur s'est produite. Veuillez réessayer.
+                  {lang === 'en' ? "An error occurred. Please try again." : "Une erreur s'est produite. Veuillez réessayer."}
                 </p>
               )}
             </form>
@@ -1205,6 +1272,7 @@ function ContactSection() {
 
 function Footer() {
   const { state: { content } } = useStore();
+  const { lang, t } = useI18n();
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   const socials = [
     { I: Instagram, l: "Instagram", url: content.instagramUrl },
@@ -1226,11 +1294,11 @@ function Footer() {
             <div className="text-[8px] tracking-[0.32em] uppercase mb-6" style={{ fontFamily: FB, color: GOLD }}>Navigation</div>
             <ul className="space-y-3">
               {[
-                { l: "Accueil", path: "/" },
-                { l: "À propos", path: "/about" },
-                { l: "Services", path: "/services" },
-                { l: "Réalisations", path: "/portfolio" },
-                { l: "Contact", path: "/contact" }
+                { l: t(content.navLabels.accueil, content.navLabels_en?.accueil) || "Accueil", path: "/" },
+                { l: t(content.navLabels.about, content.navLabels_en?.about) || "À propos", path: "/about" },
+                { l: t(content.navLabels.services, content.navLabels_en?.services) || "Services", path: "/services" },
+                { l: t(content.navLabels.portfolio, content.navLabels_en?.portfolio) || "Réalisations", path: "/portfolio" },
+                { l: t(content.navLabels.contact, content.navLabels_en?.contact) || "Contact", path: "/contact" }
               ].map(({ l, path }) => (
                 <li key={path}><Link to={path} onClick={() => window.scrollTo(0,0)} className="text-xs text-white/40 hover:text-white transition-colors" style={{ fontFamily: FB, fontWeight: 300 }}>{l}</Link></li>
               ))}

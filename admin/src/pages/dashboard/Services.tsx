@@ -5,9 +5,11 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Pencil, Trash2, GripVertical, X } from 'lucide-react';
 
-interface Service { id: string; iconName: string; title: string; description: string; order: number; }
+import { useAdminLang } from './Layout';
+
+interface Service { id: string; iconName: string; title: string; description: string; order: number; title_en?: string; description_en?: string; }
 type ServiceForm = Omit<Service, 'id' | 'order'>;
-const EMPTY: ServiceForm = { iconName: 'Layers', title: '', description: '' };
+const EMPTY: ServiceForm = { iconName: 'Layers', title: '', description: '', title_en: '', description_en: '' };
 
 const ICONS = ['Layers', 'Home', 'Building2', 'Sofa', 'Lightbulb', 'Ruler', 'PenTool', 'Monitor', 'Palette', 'Wrench', 'Star', 'Heart'];
 
@@ -40,7 +42,8 @@ function SortableRow({ service, onEdit, onDelete }: { service: Service; onEdit: 
 }
 
 function Modal({ service, onClose, onSaved }: { service: Service | null; onClose: () => void; onSaved: () => void }) {
-  const [form, setForm] = useState<ServiceForm>(service ? { iconName: service.iconName, title: service.title, description: service.description } : EMPTY);
+  const { lang } = useAdminLang();
+  const [form, setForm] = useState<ServiceForm>(service ? { iconName: service.iconName, title: service.title, description: service.description, title_en: service.title_en ?? '', description_en: service.description_en ?? '' } : EMPTY);
   const [saving, setSaving] = useState(false);
 
   async function save() {
@@ -66,11 +69,11 @@ function Modal({ service, onClose, onSaved }: { service: Service | null; onClose
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Titre</label>
-            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="input w-full" placeholder="Architecture d'intérieur" />
+            <input value={lang === 'en' ? form.title_en : form.title} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'title_en' : 'title']: e.target.value }))} className="input w-full" placeholder="Architecture d'intérieur" />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description</label>
-            <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="input w-full resize-none" rows={3} />
+            <textarea value={lang === 'en' ? form.description_en : form.description} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'description_en' : 'description']: e.target.value }))} className="input w-full resize-none" rows={3} />
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">

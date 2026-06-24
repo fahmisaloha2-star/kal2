@@ -12,7 +12,7 @@ interface SiteContent {
   [key: string]: string;
 }
 
-const BASE_URL = (import.meta.env.VITE_API_URL || '').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
 const SECTIONS = ['hero', 'about', 'services', 'portfolio', 'contact'];
 
 const GOLD = '#B89B5E';

@@ -7,18 +7,22 @@ import { Plus, Pencil, Trash2, GripVertical, Search, X, Upload, Star } from 'luc
 
 type Category = 'Résidentiel' | 'Commercial' | 'Bureaux' | 'Hôtellerie & Restauration' | 'Santé & Bien-être';
 const CATEGORIES: Category[] = ['Résidentiel', 'Commercial', 'Bureaux', 'Hôtellerie & Restauration', 'Santé & Bien-être'];
-const BASE_URL = (import.meta.env.VITE_API_URL || '').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+
+import { useAdminLang } from './Layout';
 
 interface Project {
   id: string; title: string; category: string; location: string;
   year: number; images: string[]; thumbnails?: string[];
   description: string; featured: boolean; published: boolean; order: number;
+  title_en?: string; category_en?: string; location_en?: string; description_en?: string;
 }
 type ProjectForm = Omit<Project, 'id' | 'order'>;
 
 const EMPTY_FORM: ProjectForm = {
   title: '', category: 'Résidentiel', location: '', year: new Date().getFullYear(),
   images: [], thumbnails: [], description: '', featured: false, published: true,
+  title_en: '', category_en: '', location_en: '', description_en: ''
 };
 
 function useToast() {
@@ -144,10 +148,12 @@ function ImageUploadZone({ images, thumbnails, onChange }: {
 function Modal({ project, onClose, onSaved }: {
   project: Project | null; onClose: () => void; onSaved: () => void;
 }) {
+  const { lang } = useAdminLang();
   const [form, setForm] = useState<ProjectForm>(project ? {
     title: project.title, category: project.category, location: project.location,
     year: project.year, images: project.images, thumbnails: project.thumbnails ?? [],
     description: project.description, featured: project.featured, published: project.published,
+    title_en: project.title_en ?? '', category_en: project.category_en ?? '', location_en: project.location_en ?? '', description_en: project.description_en ?? ''
   } : EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
@@ -172,14 +178,19 @@ function Modal({ project, onClose, onSaved }: {
         </div>
         <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
           <Field label="Titre">
-            <input value={form.title} onChange={e => set('title', e.target.value)}
+            <input value={lang === 'en' ? form.title_en : form.title} onChange={e => set(lang === 'en' ? 'title_en' : 'title', e.target.value)}
               className="input" placeholder="Villa résidentielle à La Marsa" />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Catégorie">
-              <select value={form.category} onChange={e => set('category', e.target.value as Category)} className="input">
-                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-              </select>
+              {lang === 'fr' ? (
+                <select value={form.category} onChange={e => set('category', e.target.value as Category)} className="input">
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
+              ) : (
+                <input value={form.category_en || ''} onChange={e => set('category_en', e.target.value)}
+                  className="input" placeholder="Residential" />
+              )}
             </Field>
             <Field label="Année">
               <input type="number" value={form.year} onChange={e => set('year', +e.target.value)}
@@ -187,11 +198,11 @@ function Modal({ project, onClose, onSaved }: {
             </Field>
           </div>
           <Field label="Localisation">
-            <input value={form.location} onChange={e => set('location', e.target.value)}
+            <input value={lang === 'en' ? form.location_en : form.location} onChange={e => set(lang === 'en' ? 'location_en' : 'location', e.target.value)}
               className="input" placeholder="Tunis, Tunisie" />
           </Field>
           <Field label="Description">
-            <textarea value={form.description} onChange={e => set('description', e.target.value)}
+            <textarea value={lang === 'en' ? form.description_en : form.description} onChange={e => set(lang === 'en' ? 'description_en' : 'description', e.target.value)}
               className="input resize-none" rows={3} placeholder="Décrivez ce projet..." />
           </Field>
           <Field label="Images">

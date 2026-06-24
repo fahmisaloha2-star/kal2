@@ -5,9 +5,11 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Pencil, Trash2, GripVertical, X, Star } from 'lucide-react';
 
-interface Testimonial { id: string; name: string; project: string; text: string; rating: number; order?: number; }
+import { useAdminLang } from './Layout';
+
+interface Testimonial { id: string; name: string; project: string; text: string; rating: number; order?: number; text_en?: string; project_en?: string; }
 type Form = Omit<Testimonial, 'id' | 'order'>;
-const EMPTY: Form = { name: '', project: '', text: '', rating: 5 };
+const EMPTY: Form = { name: '', project: '', text: '', rating: 5, text_en: '', project_en: '' };
 
 function useToast() {
   const [msg, setMsg] = useState('');
@@ -52,7 +54,8 @@ function SortableRow({ t, onEdit, onDelete }: { t: Testimonial; onEdit: (t: Test
 }
 
 function Modal({ testimonial, onClose, onSaved }: { testimonial: Testimonial | null; onClose: () => void; onSaved: () => void }) {
-  const [form, setForm] = useState<Form>(testimonial ? { name: testimonial.name, project: testimonial.project, text: testimonial.text, rating: testimonial.rating } : EMPTY);
+  const { lang } = useAdminLang();
+  const [form, setForm] = useState<Form>(testimonial ? { name: testimonial.name, project: testimonial.project, text: testimonial.text, rating: testimonial.rating, text_en: testimonial.text_en ?? '', project_en: testimonial.project_en ?? '' } : EMPTY);
   const [saving, setSaving] = useState(false);
 
   async function save() {
@@ -70,15 +73,17 @@ function Modal({ testimonial, onClose, onSaved }: { testimonial: Testimonial | n
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
         </div>
         <div className="px-6 py-5 space-y-4">
-          {(['name', 'project'] as const).map(k => (
-            <div key={k} className="space-y-1.5">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">{k === 'name' ? 'Nom' : 'Projet'}</label>
-              <input value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} className="input w-full" />
-            </div>
-          ))}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Nom</label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="input w-full" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Projet</label>
+            <input value={lang === 'en' ? form.project_en : form.project} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'project_en' : 'project']: e.target.value }))} className="input w-full" />
+          </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Témoignage</label>
-            <textarea value={form.text} onChange={e => setForm(f => ({ ...f, text: e.target.value }))} className="input w-full resize-none" rows={4} />
+            <textarea value={lang === 'en' ? form.text_en : form.text} onChange={e => setForm(f => ({ ...f, [lang === 'en' ? 'text_en' : 'text']: e.target.value }))} className="input w-full resize-none" rows={4} />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Note</label>

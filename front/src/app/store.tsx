@@ -1,31 +1,36 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from "react";
 import { api } from "../api";
 
+export type Language = "fr" | "en";
+
 export type ProjectCategory = "Résidentiel" | "Commercial" | "Bureaux" | "Hôtellerie & Restauration" | "Santé & Bien-être";
 
 export interface Project {
-  id: string; title: string; category: ProjectCategory | string; location: string; year: number;
-  images: string[]; thumbnails?: string[]; description: string; featured: boolean; published: boolean; order: number;
+  id: string; title: string; title_en?: string; category: ProjectCategory | string; category_en?: string; location: string; location_en?: string; year: number;
+  images: string[]; thumbnails?: string[]; description: string; description_en?: string; featured: boolean; published: boolean; order: number;
 }
-export interface Service { id: string; iconName: string; title: string; description: string; order: number; }
-export interface Testimonial { id: string; name: string; project: string; text: string; rating: number; order?: number; }
-export interface FaqItem { id: string; question: string; answer: string; order: number; }
+export interface Service { id: string; iconName: string; title: string; title_en?: string; description: string; description_en?: string; order: number; }
+export interface Testimonial { id: string; name: string; project: string; project_en?: string; text: string; text_en?: string; rating: number; order?: number; }
+export interface FaqItem { id: string; question: string; question_en?: string; answer: string; answer_en?: string; order: number; }
 
 export interface NavLabels {
   accueil: string; about: string; services: string; domaines: string; portfolio: string; contact: string;
 }
+export interface NavLabelsEn {
+  accueil?: string; about?: string; services?: string; domaines?: string; portfolio?: string; contact?: string;
+}
 
 export interface SiteContent {
   // Existing
-  heroTitle: string; heroTagline: string; heroDescription: string;
-  aboutTitle: string; aboutBody1: string; aboutBody2: string; aboutBody3: string;
+  heroTitle: string; heroTitle_en?: string; heroTagline: string; heroTagline_en?: string; heroDescription: string; heroDescription_en?: string;
+  aboutTitle: string; aboutTitle_en?: string; aboutBody1: string; aboutBody1_en?: string; aboutBody2: string; aboutBody2_en?: string; aboutBody3: string; aboutBody3_en?: string;
   phone: string; email: string; address: string;
   statsProjects: string; statsYears: string; statsClients: string;
   // New
-  servicesTitle: string; servicesSubtitle: string;
-  portfolioTitle: string; portfolioSubtitle: string;
-  contactTitle: string; contactSubtitle: string;
-  navLabels: NavLabels;
+  servicesTitle: string; servicesTitle_en?: string; servicesSubtitle: string; servicesSubtitle_en?: string;
+  portfolioTitle: string; portfolioTitle_en?: string; portfolioSubtitle: string; portfolioSubtitle_en?: string;
+  contactTitle: string; contactTitle_en?: string; contactSubtitle: string; contactSubtitle_en?: string;
+  navLabels: NavLabels; navLabels_en?: NavLabelsEn;
   instagramUrl: string; facebookUrl: string; linkedinUrl: string; pinterestUrl: string;
   beforeAfterBefore: string; beforeAfterAfter: string;
 }
@@ -146,7 +151,7 @@ function reducer(state: AppState, action: Action): AppState {
   }
 }
 
-interface StoreCtx { state: AppState; }
+interface StoreCtx { state: AppState; language: Language; setLanguage: (l: Language) => void; }
 const StoreContext = createContext<StoreCtx>(null!);
 
 const GOLD = "#B89B5E";
@@ -168,6 +173,13 @@ function hasItems(x: unknown): x is unknown[] { return Array.isArray(x) && x.len
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<Language>(() => {
+    return (localStorage.getItem("language") as Language) || "fr";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("language", language);
+  }, [language]);
 
   useEffect(() => {
     let cancelled = false;
@@ -200,10 +212,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <StoreContext.Provider value={{ state }}>
+    <StoreContext.Provider value={{ state, language, setLanguage }}>
       {loading ? <LoadingScreen /> : children}
     </StoreContext.Provider>
   );
 }
 
 export function useStore() { return useContext(StoreContext); }
+
+export function useI18n() {
+  const { language } = useStore();
+  return {
+    lang: language,
+    t: (fr: string, en?: string) => (language === 'en' && en) ? en : fr,
+  };
+}
