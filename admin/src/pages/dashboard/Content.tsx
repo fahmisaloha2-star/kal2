@@ -21,6 +21,7 @@ interface SiteContent {
 }
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+const imgSrc = (src: string) => src?.startsWith('http') ? src : `${BASE_URL}${src}`;
 
 const TABS = [
   { key: 'hero', label: 'Accueil' },
@@ -64,7 +65,7 @@ function ImageUpload({ value, onChange, label }: { value: string; onChange: (url
       >
         <input type="file" accept="image/*" className="hidden" onChange={e => handleFile(e.target.files)} />
         {value ? (
-          <img src={`${BASE_URL}${value}`} alt={label} className="max-h-32 object-contain rounded-lg" />
+          <img src={imgSrc(value)} alt={label} className="max-h-32 object-contain rounded-lg" />
         ) : (
           <>
             <Upload size={18} className="text-gray-300 mb-1" />

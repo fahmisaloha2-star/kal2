@@ -14,6 +14,7 @@ interface SiteContent {
 }
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+const imgSrc = (src: string) => src?.startsWith('http') ? src : `${BASE_URL}${src}`;
 const SECTIONS = ['hero', 'about', 'services', 'portfolio', 'contact'];
 
 const GOLD = '#B89B5E';
@@ -97,7 +98,7 @@ function ImageReplace({ src, onReplace, className = '' }: { src: string; onRepla
     <div className={`relative ${className}`}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       onDragOver={e => e.preventDefault()} onDrop={handleDrop}>
-      {src && <img src={`${BASE_URL}${src}`} alt="" className="w-full h-full object-cover" />}
+      {src && <img src={imgSrc(src)} alt="" className="w-full h-full object-cover" />}
       {(hover || uploading || !src) && (
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center cursor-pointer rounded" onClick={handleClick}>
           <Upload size={20} className="text-white mb-1" />

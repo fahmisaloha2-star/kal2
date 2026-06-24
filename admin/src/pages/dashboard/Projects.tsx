@@ -8,6 +8,7 @@ import { Plus, Pencil, Trash2, GripVertical, Search, X, Upload, Star } from 'luc
 type Category = 'Résidentiel' | 'Commercial' | 'Bureaux' | 'Hôtellerie & Restauration' | 'Santé & Bien-être';
 const CATEGORIES: Category[] = ['Résidentiel', 'Commercial', 'Bureaux', 'Hôtellerie & Restauration', 'Santé & Bien-être'];
 const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
+const imgSrc = (src: string) => src?.startsWith('http') ? src : `${BASE_URL}${src}`;
 
 import { useAdminLang } from './Layout';
 
@@ -56,7 +57,7 @@ function SortableRow({ project, onEdit, onDelete, onToggleFeatured }: {
       <td className="px-3 py-3 w-12">
         <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden">
           {thumb ? (
-            <img src={`${BASE_URL}${thumb}`} alt={project.title} className="w-full h-full object-cover" />
+            <img src={imgSrc(thumb)} alt={project.title} className="w-full h-full object-cover" />
           ) : <div className="w-full h-full bg-gray-200" />}
         </div>
       </td>
@@ -132,7 +133,7 @@ function ImageUploadZone({ images, thumbnails, onChange }: {
         <div className="flex flex-wrap gap-2">
           {images.map((src, i) => (
             <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100">
-              <img src={`${BASE_URL}${src}`} alt="" className="w-full h-full object-cover" />
+              <img src={imgSrc(src)} alt="" className="w-full h-full object-cover" />
               <button onClick={() => removeImage(i)}
                 className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] hover:bg-red-600">
                 <X size={8} />
