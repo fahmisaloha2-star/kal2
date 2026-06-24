@@ -219,7 +219,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         </button>
 
         {/* Gallery */}
-        <div className="relative h-[42vh] sm:h-[50vh] bg-[#1F1F1F]">
+        <div className="relative w-full h-[300px] sm:h-[400px] bg-[#1F1F1F]">
           <img src={images[idx]} alt={`${project.title} — image ${idx + 1}`} className="w-full h-full object-cover" />
           {images.length > 1 && (
             <>
