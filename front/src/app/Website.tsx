@@ -492,7 +492,7 @@ function HeroSection() {
             <img
               src="/logo-new.png"
               alt="2M ARCHI — Architecture d'Intérieur et Design"
-              className="w-72 md:w-80 lg:w-96 object-contain drop-shadow-sm"
+              className="w-full max-w-sm md:max-w-md lg:max-w-lg object-contain drop-shadow-sm"
             />
           </div>
           <div className="flex items-center gap-3 mb-8">
