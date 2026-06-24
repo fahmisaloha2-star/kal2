@@ -37,3 +37,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background: #F8F9FA; color: 
 .input {
   @apply w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#B89B5E] focus:ring-1 focus:ring-[#B89B5E] transition bg-white;
 }
+
+html {
+  font-size: 18px;
+}
