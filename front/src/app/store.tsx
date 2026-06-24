@@ -221,9 +221,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 export function useStore() { return useContext(StoreContext); }
 
 export function useI18n() {
-  const { language } = useStore();
+  const { language, setLanguage } = useStore();
   return {
     lang: language,
+    setLanguage,
     t: (fr: string, en?: string) => (language === 'en' && en) ? en : fr,
   };
 }
