@@ -483,9 +483,9 @@ function HeroSection() {
   const cta = (label: string, path: string) => { trackEvent("cta_click", { cta_label: label }); go(path); };
 
   return (
-    <section id="hero" ref={heroRef} className="relative min-h-screen grid lg:grid-cols-2 overflow-hidden">
+    <section id="hero" ref={heroRef} className="relative grid lg:grid-cols-2 overflow-hidden">
       {/* Text panel */}
-      <div className="flex flex-col justify-center px-8 md:px-16 lg:px-20 pt-28 pb-16 lg:pt-20 lg:pb-16 min-h-[60vh] lg:min-h-screen z-10 order-2 lg:order-1" style={{ backgroundColor: "#F7F5F2" }}>
+      <div className="flex flex-col justify-center px-8 md:px-16 lg:px-20 pt-24 pb-12 lg:py-24 z-10 order-2 lg:order-1" style={{ backgroundColor: "#F7F5F2" }}>
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
           {/* Logo */}
           <div className="mb-8">
@@ -512,9 +512,8 @@ function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Stats bar */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.9 }}
-          className="flex gap-10 pt-12 mt-12 border-t border-[#DDD7D0]">
+          className="flex gap-10 pt-8 mt-8 border-t border-[#DDD7D0]">
           {[
             { n: content.statsProjects, l: lang === 'en' ? "Completed Projects" : "Projets réalisés" },
             { n: content.statsYears, l: lang === 'en' ? "Years of experience" : "Années d'expérience" },
@@ -529,7 +528,7 @@ function HeroSection() {
       </div>
 
       {/* Image panel */}
-      <div className="relative order-1 lg:order-2 h-[55vw] sm:h-[45vw] lg:h-auto lg:min-h-screen overflow-hidden">
+      <div className="relative order-1 lg:order-2 h-[60vw] sm:h-[50vw] lg:h-auto overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: imgY, scale: 1.12 }}>
           <motion.img
             src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1200&h=1600&fit=crop&auto=format"
