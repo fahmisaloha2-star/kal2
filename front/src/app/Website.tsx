@@ -257,7 +257,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           <div className="text-[9px] mb-3 tracking-[0.28em] uppercase" style={{ fontFamily: FB, color: GOLD }}>
             {project.category} · {project.location} · {project.year}
           </div>
-          <h3 className="text-2xl sm:text-3xl text-[#1F1F1F] mb-5" style={{ fontFamily: FD }}>{project.title}</h3>
+          <h3 className="text-4xl sm:text-5xl text-[#1F1F1F] mb-5" style={{ fontFamily: FD }}>{project.title}</h3>
           <p className="text-sm text-[#4A4A4A] leading-loose mb-8" style={{ fontFamily: FB, fontWeight: 300 }}>{project.description}</p>
           <PrimaryBtn onClick={goContact}>Nous contacter <ArrowRight size={14} /></PrimaryBtn>
         </div>
@@ -319,7 +319,7 @@ function Navbar() {
 
           {/* Logo */}
           <Link to="/" onClick={closeMenu} aria-label="Retour à l'accueil" className="flex items-center flex-shrink-0 group">
-            <img src="/logo-2marchi.jpg" alt="2M ARCHI" className="h-12 w-auto object-contain transition-transform group-hover:scale-105 rounded-md mix-blend-multiply" />
+            <img src="/logo-new.png" alt="2M ARCHI" className="h-12 w-auto object-contain transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Nav links – desktop */}
@@ -393,7 +393,7 @@ function Navbar() {
           {/* Header */}
           <div className="flex items-center justify-between px-6 h-[72px] border-b border-[#DDD7D0] flex-shrink-0">
             <div className="flex items-center gap-3">
-              <img src="/logo-2marchi.jpg" alt="2M ARCHI" className="h-10 w-auto object-contain rounded-md mix-blend-multiply" />
+              <img src="/logo-new.png" alt="2M ARCHI" className="h-10 w-auto object-contain" />
             </div>
             <button
               onClick={() => setMobileOpen(false)}
@@ -467,9 +467,9 @@ function HeroSection() {
           {/* Logo */}
           <div className="mb-8">
             <img
-              src="/logo-2marchi.jpg"
+              src="/logo-new.png"
               alt="2M ARCHI — Architecture d'Intérieur et Design"
-              className="w-72 md:w-80 lg:w-96 object-contain drop-shadow-sm mix-blend-multiply"
+              className="w-72 md:w-80 lg:w-96 object-contain drop-shadow-sm"
             />
           </div>
           <div className="flex items-center gap-3 mb-8">
@@ -548,7 +548,7 @@ function ServicesPreview() {
         <FadeIn className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-12">
           <div>
             <GoldRule text="Nos expertises" />
-            <h2 className="text-3xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Nos Services</h2>
+            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Nos Services</h2>
           </div>
           <button onClick={go} className="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase hover:gap-3 transition-all" style={{ fontFamily: FB, color: GOLD }}>
             Voir tous les services <ArrowRight size={13} />
@@ -598,7 +598,7 @@ function FeaturedCarousel() {
         <FadeIn className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-12">
           <div>
             <GoldRule text="Sélection" />
-            <h2 className="text-3xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Réalisations à la une</h2>
+            <h2 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Réalisations à la une</h2>
           </div>
           <div className="flex gap-2">
             <button onClick={() => emblaApi?.scrollPrev()} aria-label="Précédent" className="w-10 h-10 rounded-full border border-[#DDD7D0] bg-white flex items-center justify-center text-[#4A4A4A] hover:border-[#B89B5E] hover:text-[#B89B5E] transition-colors">
@@ -674,7 +674,7 @@ function AboutSection() {
               </div>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="text-4xl md:text-5xl text-[#1F1F1F] mb-8 leading-snug" style={{ fontFamily: FD }}>{content.aboutTitle}</h2>
+              <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-8 leading-snug" style={{ fontFamily: FD }}>{content.aboutTitle}</h2>
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-sm text-[#4A4A4A] leading-loose mb-5" style={{ fontFamily: FB, fontWeight: 300 }}>{content.aboutBody1}</p>
@@ -729,7 +729,7 @@ function ServicesSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
           <GoldRule text="Expertise" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.servicesTitle}</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.servicesTitle}</h2>
           <p className="text-sm text-[#6D6D6D] max-w-xl mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{content.servicesSubtitle}</p>
         </FadeIn>
         <div className="space-y-20">
@@ -751,7 +751,7 @@ function ServicesSection() {
                     <div className="text-[9px] mb-4 tracking-[0.3em] uppercase" style={{ fontFamily: FB, color: GOLD }}>
                       {String(i + 1).padStart(2, "0")} / {String(sorted.length).padStart(2, "0")}
                     </div>
-                    <h3 className="text-2xl md:text-3xl text-[#1F1F1F] mb-5 leading-snug" style={{ fontFamily: FD }}>{s.title}</h3>
+                    <h3 className="text-4xl md:text-5xl text-[#1F1F1F] mb-5 leading-snug" style={{ fontFamily: FD }}>{s.title}</h3>
                     <p className="text-sm text-[#4A4A4A] leading-loose mb-7" style={{ fontFamily: FB, fontWeight: 300 }}>{s.description}</p>
                     <button onClick={() => navigate("/contact")}
                       className="inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase group" style={{ fontFamily: FB, fontWeight: 600, color: GOLD }}>
@@ -792,7 +792,7 @@ function DomainesSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-16">
           <GoldRule text="Secteurs d'intervention" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>Nos Domaines d'Intervention</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>Nos Domaines d'Intervention</h2>
           <p className="text-sm text-[#6D6D6D] max-w-xl mx-auto" style={{ fontFamily: FB, fontWeight: 300 }}>
             2M ARCHI intervient dans tous les secteurs pour concevoir des espaces fonctionnels, esthétiques et adaptés à chaque usage.
           </p>
@@ -841,7 +841,7 @@ function PortfolioSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-16">
           <GoldRule text="Réalisations" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>{content.portfolioTitle}</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F] mb-4" style={{ fontFamily: FD }}>{content.portfolioTitle}</h2>
           <p className="text-sm text-[#6D6D6D] max-w-md mx-auto" style={{ fontFamily: FB, fontWeight: 300 }}>
             {content.portfolioSubtitle}
           </p>
@@ -892,7 +892,7 @@ function PortfolioSection() {
         <div className="mt-24">
           <FadeIn className="text-center mb-10">
             <GoldRule text="Transformation" />
-            <h3 className="text-3xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Avant / Après</h3>
+            <h3 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Avant / Après</h3>
             <p className="text-sm text-[#6D6D6D] mt-3" style={{ fontFamily: FB, fontWeight: 300 }}>Glissez pour voir la transformation complète</p>
           </FadeIn>
           <FadeIn>
@@ -925,7 +925,7 @@ function ProcessSection() {
       <div className="max-w-4xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
           <GoldRule text="Notre méthode" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Notre Méthode de Travail</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Notre Méthode de Travail</h2>
         </FadeIn>
         <div className="relative">
           {/* Central vertical line */}
@@ -941,7 +941,7 @@ function ProcessSection() {
                     {even ? (
                       <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
                         <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Étape {step.n}</div>
-                        <h3 className="text-xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
+                        <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
                         <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
                       </div>
                     ) : null}
@@ -960,7 +960,7 @@ function ProcessSection() {
                     {!even ? (
                       <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
                         <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>Étape {step.n}</div>
-                        <h3 className="text-xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
+                        <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
                         <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
                       </div>
                     ) : null}
@@ -1004,7 +1004,7 @@ function InstagramSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-12">
           <GoldRule text="Instagram" />
-          <h2 className="text-3xl text-[#1F1F1F] mb-2" style={{ fontFamily: FD }}>Suivez 2M ARCHI sur Instagram</h2>
+          <h2 className="text-5xl text-[#1F1F1F] mb-2" style={{ fontFamily: FD }}>Suivez 2M ARCHI sur Instagram</h2>
           <p className="text-xs text-[#6D6D6D]" style={{ fontFamily: FB }}>@2m.archi</p>
         </FadeIn>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8">
@@ -1046,7 +1046,7 @@ function FaqSection() {
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn className="text-center mb-16">
           <GoldRule text="Questions fréquentes" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>FAQ</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>FAQ</h2>
         </FadeIn>
         <div className="space-y-3">
           {sorted.map((faq, i) => (
@@ -1115,7 +1115,7 @@ function ContactSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <FadeIn className="text-center mb-20">
           <GoldRule text="Parlons de votre projet" />
-          <h2 className="text-4xl md:text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.contactTitle}</h2>
+          <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{content.contactTitle}</h2>
           <p className="text-sm text-[#6D6D6D] max-w-md mx-auto mt-4" style={{ fontFamily: FB, fontWeight: 300 }}>{content.contactSubtitle}</p>
         </FadeIn>
         <div className="grid lg:grid-cols-2 gap-16 xl:gap-24">
@@ -1218,7 +1218,7 @@ function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
           <div>
             <Link to="/" onClick={() => window.scrollTo(0,0)} className="inline-block mb-4 hover:opacity-80 transition-opacity">
-              <img src="/logo-2marchi.jpg" alt="2M ARCHI" className="h-12 w-auto object-contain rounded-md bg-white p-1" />
+              <img src="/logo-new.png" alt="2M ARCHI" className="h-12 w-auto object-contain" />
             </Link>
             <p className="text-xs text-white/40 leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>Des espaces uniques où esthétique, fonctionnalité et innovation se rencontrent.</p>
           </div>
