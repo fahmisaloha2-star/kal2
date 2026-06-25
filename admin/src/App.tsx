@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { auth } from './auth';
 import Login from './pages/Login';
 import Layout from './pages/dashboard/Layout';
@@ -36,6 +37,7 @@ export default function App() {
         </Route>
         <Route path="*" element={<Navigate to={auth.isLoggedIn() ? '/dashboard' : '/login'} replace />} />
       </Routes>
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
