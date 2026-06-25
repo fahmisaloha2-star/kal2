@@ -1387,6 +1387,36 @@ function Contact() {
 export default function Website() {
   const { state: { content, faqs } } = useStore();
 
+  // ── Dynamic typography overrides from admin ─────────────────────────────
+  const typographyCSS = useMemo(() => {
+    const typo = content.typography;
+    if (!typo) return '';
+    const rules: string[] = [];
+    const scale = typo.globalScale ? parseFloat(typo.globalScale) / 100 : null;
+
+    if (typo.h1Size) {
+      rules.push(`h1 { font-size: ${typo.h1Size} !important; }`);
+    } else if (scale) {
+      rules.push(`h1 { font-size: calc(var(--h1-base, 3.75rem) * ${scale}) !important; }`);
+    }
+    if (typo.h2Size) {
+      rules.push(`h2 { font-size: ${typo.h2Size} !important; }`);
+    } else if (scale) {
+      rules.push(`h2 { font-size: calc(var(--h2-base, 3rem) * ${scale}) !important; }`);
+    }
+    if (typo.h3Size) {
+      rules.push(`h3 { font-size: ${typo.h3Size} !important; }`);
+    } else if (scale) {
+      rules.push(`h3 { font-size: calc(var(--h3-base, 1.875rem) * ${scale}) !important; }`);
+    }
+    if (typo.pSize) {
+      rules.push(`p { font-size: ${typo.pSize} !important; }`);
+    } else if (scale) {
+      rules.push(`p { font-size: calc(var(--p-base, 0.875rem) * ${scale}) !important; }`);
+    }
+    return rules.join('\n');
+  }, [content.typography]);
+
   // Scroll to top on route change
   const location = useLocation();
   useEffect(() => {
@@ -1434,6 +1464,8 @@ export default function Website() {
 
   return (
     <div style={{ backgroundColor: "#F7F5F2", color: "#1F1F1F" }} className="overflow-x-hidden">
+      {/* Dynamic typography overrides from admin dashboard */}
+      {typographyCSS && <style dangerouslySetInnerHTML={{ __html: typographyCSS }} />}
       <a href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:shadow"
         style={{ fontFamily: FB }}>
@@ -1453,3 +1485,4 @@ export default function Website() {
     </div>
   );
 }
+

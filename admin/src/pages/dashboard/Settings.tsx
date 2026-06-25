@@ -1,11 +1,28 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api';
 
+interface Typography {
+  globalScale: string;
+  h1Size: string;
+  h2Size: string;
+  h3Size: string;
+  pSize: string;
+}
+
 interface SiteContent {
   phone: string; email: string; address: string;
   instagramUrl: string; facebookUrl: string; linkedinUrl: string; pinterestUrl: string;
   navLabels: { accueil: string; about: string; services: string; domaines: string; portfolio: string; contact: string; };
+  typography?: Typography;
 }
+
+const DEFAULT_TYPO: Typography = {
+  globalScale: '100',
+  h1Size: '',
+  h2Size: '',
+  h3Size: '',
+  pSize: '',
+};
 
 function useToast() {
   const [msg, setMsg] = useState('');
@@ -37,19 +54,33 @@ export default function Settings() {
     phone: '', email: '', address: '',
     instagramUrl: '', facebookUrl: '', linkedinUrl: '', pinterestUrl: '',
     navLabels: { accueil: '', about: '', services: '', domaines: '', portfolio: '', contact: '' },
+    typography: { ...DEFAULT_TYPO },
   });
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
   const [pwError, setPwError] = useState('');
   const [saving, setSaving] = useState('');
   const { show, Toast } = useToast();
 
-  useEffect(() => { api.getContent().then(c => setContent(c)); }, []);
+  useEffect(() => {
+    api.getContent().then(c => {
+      setContent({
+        ...c,
+        typography: c.typography ? { ...DEFAULT_TYPO, ...c.typography } : { ...DEFAULT_TYPO },
+      });
+    });
+  }, []);
 
-  function setField(k: keyof Omit<SiteContent, 'navLabels'>, v: string) {
+  function setField(k: keyof Omit<SiteContent, 'navLabels' | 'typography'>, v: string) {
     setContent(prev => ({ ...prev, [k]: v }));
   }
   function setNav(k: keyof SiteContent['navLabels'], v: string) {
     setContent(prev => ({ ...prev, navLabels: { ...prev.navLabels, [k]: v } }));
+  }
+  function setTypo(k: keyof Typography, v: string) {
+    setContent(prev => ({
+      ...prev,
+      typography: { ...(prev.typography || DEFAULT_TYPO), [k]: v },
+    }));
   }
 
   async function saveSection(fields: Partial<SiteContent>, label: string) {
@@ -78,6 +109,8 @@ export default function Settings() {
       {saving === label ? 'Enregistrement...' : 'Sauvegarder'}
     </button>
   );
+
+  const typo = content.typography || DEFAULT_TYPO;
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-5">
@@ -126,6 +159,103 @@ export default function Settings() {
         </div>
       </Section>
 
+      {/* Typography */}
+      <Section title="Typographie — Tailles de texte">
+        <p className="text-xs text-gray-400 italic">
+          Contrôlez la taille de tous les textes du site. Utilisez l'échelle globale pour un changement proportionnel,
+          ou définissez des tailles spécifiques pour chaque type de texte (ex: 48px, 3rem, 2.5em).
+          Laissez vide pour garder la taille par défaut.
+        </p>
+
+        {/* Global scale slider */}
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Échelle globale — {typo.globalScale || '100'}%
+          </label>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400 w-8">50%</span>
+            <input
+              type="range"
+              min="50"
+              max="200"
+              step="5"
+              value={typo.globalScale || '100'}
+              onChange={e => setTypo('globalScale', e.target.value)}
+              className="flex-1 accent-[#B89B5E] h-2 rounded-lg cursor-pointer"
+            />
+            <span className="text-xs text-gray-400 w-10">200%</span>
+          </div>
+          <p className="text-[10px] text-gray-400">
+            Appliqué uniquement quand les tailles individuelles ci-dessous sont vides.
+          </p>
+        </div>
+
+        {/* Individual sizes */}
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="H1 — Titres principaux">
+            <input
+              value={typo.h1Size}
+              onChange={e => setTypo('h1Size', e.target.value)}
+              className="input w-full"
+              placeholder="ex: 60px, 4rem (vide = échelle globale)"
+            />
+          </Field>
+          <Field label="H2 — Titres de section">
+            <input
+              value={typo.h2Size}
+              onChange={e => setTypo('h2Size', e.target.value)}
+              className="input w-full"
+              placeholder="ex: 48px, 3rem"
+            />
+          </Field>
+          <Field label="H3 — Sous-titres">
+            <input
+              value={typo.h3Size}
+              onChange={e => setTypo('h3Size', e.target.value)}
+              className="input w-full"
+              placeholder="ex: 30px, 1.875rem"
+            />
+          </Field>
+          <Field label="P — Paragraphes">
+            <input
+              value={typo.pSize}
+              onChange={e => setTypo('pSize', e.target.value)}
+              className="input w-full"
+              placeholder="ex: 16px, 1rem"
+            />
+          </Field>
+        </div>
+
+        {/* Live preview */}
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 space-y-2">
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-2">Aperçu en direct</p>
+          <h1 style={{ fontSize: typo.h1Size || `${(parseFloat(typo.globalScale || '100') / 100) * 60}px`, fontFamily: "'Playfair Display', Georgia, serif" }} className="text-[#1F1F1F] leading-tight">
+            Titre H1
+          </h1>
+          <h2 style={{ fontSize: typo.h2Size || `${(parseFloat(typo.globalScale || '100') / 100) * 48}px`, fontFamily: "'Playfair Display', Georgia, serif" }} className="text-[#1F1F1F] leading-tight">
+            Titre H2
+          </h2>
+          <h3 style={{ fontSize: typo.h3Size || `${(parseFloat(typo.globalScale || '100') / 100) * 30}px`, fontFamily: "'Playfair Display', Georgia, serif" }} className="text-[#1F1F1F] leading-tight">
+            Sous-titre H3
+          </h3>
+          <p style={{ fontSize: typo.pSize || `${(parseFloat(typo.globalScale || '100') / 100) * 14}px`, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 300 }} className="text-[#4A4A4A]">
+            Ceci est un paragraphe de texte exemple pour visualiser la taille du contenu.
+          </p>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            onClick={() => {
+              setContent(prev => ({ ...prev, typography: { ...DEFAULT_TYPO } }));
+            }}
+            className="px-4 py-2 text-xs border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            Réinitialiser
+          </button>
+          {savingBtn('typography', () => saveSection({ typography: content.typography } as any, 'typography'))}
+        </div>
+      </Section>
+
       {/* Password */}
       <Section title="Sécurité — Changer le mot de passe">
         <Field label="Mot de passe actuel">
@@ -149,3 +279,4 @@ export default function Settings() {
     </div>
   );
 }
+

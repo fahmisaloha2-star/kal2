@@ -33,6 +33,13 @@ export interface SiteContent {
   navLabels: NavLabels; navLabels_en?: NavLabelsEn;
   instagramUrl: string; facebookUrl: string; linkedinUrl: string; pinterestUrl: string;
   beforeAfterBefore: string; beforeAfterAfter: string;
+  typography?: {
+    globalScale?: string;
+    h1Size?: string;
+    h2Size?: string;
+    h3Size?: string;
+    pSize?: string;
+  };
 }
 
 export interface ContactForm {

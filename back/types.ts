@@ -81,4 +81,11 @@ export interface SiteContent {
   pinterestUrl: string;
   beforeAfterBefore: string;
   beforeAfterAfter: string;
+  typography?: {
+    globalScale: string;
+    h1Size: string;
+    h2Size: string;
+    h3Size: string;
+    pSize: string;
+  };
 }

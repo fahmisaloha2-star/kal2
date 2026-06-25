@@ -28,7 +28,9 @@ router.put("/", requireAuth, async (req: Request, res: Response) => {
   const incoming = req.body || {};
   // Deep-merge navLabels so a partial nav update doesn't wipe the others.
   const navLabels = { ...(existing.navLabels ?? {}), ...(incoming.navLabels ?? {}) };
-  const merged = { ...existing, ...incoming, navLabels };
+  // Deep-merge typography so a partial update doesn't wipe the others.
+  const typography = { ...(existing.typography ?? {}), ...(incoming.typography ?? {}) };
+  const merged = { ...existing, ...incoming, navLabels, typography };
 
   const { data, error } = await supabase
     .from("site_content")
