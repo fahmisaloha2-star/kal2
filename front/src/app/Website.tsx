@@ -766,7 +766,7 @@ function ServicesSection() {
               <FadeIn key={s.id} delay={0.1}>
                 <div className={`grid lg:grid-cols-2 gap-12 items-center ${even ? "" : "lg:[&>*:first-child]:order-2"}`}>
                   <div className="relative">
-                    <img src={SERVICE_IMAGES[i % SERVICE_IMAGES.length]} alt={s.title} loading="lazy"
+                    <img src={s.image || SERVICE_IMAGES[i % SERVICE_IMAGES.length]} alt={s.title} loading="lazy"
                       className="w-full h-72 object-cover rounded-2xl" />
                     <div className="absolute -bottom-4 -right-4 w-16 h-16 rounded-2xl flex items-center justify-center"
                       style={{ backgroundColor: GOLD }}>

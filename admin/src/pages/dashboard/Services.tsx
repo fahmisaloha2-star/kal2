@@ -1,19 +1,17 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../../api';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Plus, Pencil, Trash2, GripVertical, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, X, Upload, Image as ImageIcon } from 'lucide-react';
 
 import { useAdminLang } from './Layout';
 
-interface Service { id: string; iconName: string; title: string; description: string; order: number; title_en?: string; description_en?: string; }
+interface Service { id: string; iconName: string; title: string; description: string; order: number; title_en?: string; description_en?: string; image?: string; }
 type ServiceForm = Omit<Service, 'id' | 'order'>;
-const EMPTY: ServiceForm = { iconName: 'Layers', title: '', description: '', title_en: '', description_en: '' };
+const EMPTY: ServiceForm = { iconName: 'Layers', title: '', description: '', title_en: '', description_en: '', image: '' };
 
-const ICON_LIST = ['PenTool', 'Box', 'Palette', 'FileText', 'Paintbrush', 'Layers', 'Hammer', 'ShoppingBag', 'HardHat', 'Home', 'Building2', 'Sofa', 'Lightbulb', 'Ruler', 'Monitor', 'Wrench', 'Star', 'Heart'];
-
-const ICONS = ICON_LIST;
+const ICONS = ['PenTool', 'Box', 'Palette', 'FileText', 'Paintbrush', 'Layers', 'Hammer', 'ShoppingBag', 'HardHat', 'Home', 'Building2', 'Sofa', 'Lightbulb', 'Ruler', 'Monitor', 'Wrench', 'Star', 'Heart'];
 
 function useToast() {
   const [msg, setMsg] = useState('');
@@ -21,6 +19,99 @@ function useToast() {
   const Toast = msg ? <div className="fixed bottom-4 right-4 z-50 bg-[#1F1F1F] text-white text-sm px-4 py-2.5 rounded-xl shadow-lg toast-enter">{msg}</div> : null;
   return { show, Toast };
 }
+
+// ── Drag & drop image zone ────────────────────────────────────────────────────
+
+function ImageDropZone({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function uploadFile(file: File) {
+    setUploading(true);
+    const res = await api.uploadImage(file);
+    if (res.ok) {
+      const { url } = await res.json();
+      onChange(url);
+    }
+    setUploading(false);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) uploadFile(file);
+  }
+
+  function handleClick() {
+    inputRef.current?.click();
+  }
+
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  return (
+    <div>
+      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1.5">
+        Service Image
+      </label>
+      <div
+        onClick={handleClick}
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        className={`relative cursor-pointer rounded-xl border-2 border-dashed transition-all overflow-hidden ${
+          dragging
+            ? 'border-[#B89B5E] bg-amber-50'
+            : 'border-gray-200 hover:border-[#B89B5E]/60 hover:bg-gray-50'
+        }`}
+        style={{ height: '160px' }}
+      >
+        {value ? (
+          <>
+            <img src={value} alt="Service" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
+              <div className="text-white text-center">
+                <Upload size={22} className="mx-auto mb-1" />
+                <span className="text-xs font-medium">Replace image</span>
+              </div>
+            </div>
+            {/* Remove button */}
+            <button
+              onClick={e => { e.stopPropagation(); onChange(''); }}
+              className="absolute top-2 right-2 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-white shadow z-10"
+            >
+              <X size={12} />
+            </button>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-gray-400">
+            {uploading ? (
+              <>
+                <div className="w-6 h-6 border-2 border-[#B89B5E] border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs">Uploading...</span>
+              </>
+            ) : (
+              <>
+                <ImageIcon size={28} className={dragging ? 'text-[#B89B5E]' : ''} />
+                <div className="text-center">
+                  <p className="text-xs font-medium text-gray-500">Drag & drop an image here</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">or click to browse</p>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleInput} />
+      </div>
+    </div>
+  );
+}
+
+// ── Sortable table row ────────────────────────────────────────────────────────
 
 function SortableRow({ service, onEdit, onDelete, displayTitle, displayDesc, hasEn }: {
   service: Service;
@@ -36,6 +127,13 @@ function SortableRow({ service, onEdit, onDelete, displayTitle, displayDesc, has
       className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
       <td className="px-3 py-3 w-8">
         <button {...attributes} {...listeners} className="drag-handle text-gray-300 hover:text-gray-500"><GripVertical size={16} /></button>
+      </td>
+      {/* Thumbnail */}
+      <td className="px-3 py-2 w-12">
+        {service.image
+          ? <img src={service.image} alt="" className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
+          : <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center"><ImageIcon size={14} className="text-gray-300" /></div>
+        }
       </td>
       <td className="px-3 py-3 text-xs text-gray-400 font-mono">{service.iconName}</td>
       <td className="px-3 py-3 text-sm font-medium text-[#1F1F1F]">{displayTitle}</td>
@@ -56,94 +154,109 @@ function SortableRow({ service, onEdit, onDelete, displayTitle, displayDesc, has
   );
 }
 
+// ── Edit Modal ────────────────────────────────────────────────────────────────
+
 function Modal({ service, onClose, onSaved }: { service: Service | null; onClose: () => void; onSaved: () => void }) {
   const [tab, setTab] = useState<'fr' | 'en'>('fr');
-  const [form, setForm] = useState<ServiceForm>(service ? { iconName: service.iconName, title: service.title, description: service.description, title_en: service.title_en ?? '', description_en: service.description_en ?? '' } : EMPTY);
+  const [form, setForm] = useState<ServiceForm>(service
+    ? { iconName: service.iconName, title: service.title, description: service.description, title_en: service.title_en ?? '', description_en: service.description_en ?? '', image: service.image ?? '' }
+    : EMPTY
+  );
   const [saving, setSaving] = useState(false);
 
   async function save() {
     setSaving(true);
     if (service) await api.updateService(service.id, form);
     else await api.createService(form);
-    setSaving(false); onSaved();
+    setSaving(false);
+    onSaved();
   }
 
   const isFr = tab === 'fr';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg my-auto">
+        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-[#1F1F1F]">{service ? 'Edit Service' : 'New Service'}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
         </div>
 
-        {/* Icon selector */}
-        <div className="px-6 pt-5 pb-3">
-          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1.5">Icon (Lucide name)</label>
-          <select value={form.iconName} onChange={e => setForm(f => ({ ...f, iconName: e.target.value }))} className="input w-full">
-            {ICONS.map(i => <option key={i}>{i}</option>)}
-          </select>
-        </div>
+        <div className="px-6 pt-5 pb-6 space-y-5">
+          {/* Image upload */}
+          <ImageDropZone
+            value={form.image ?? ''}
+            onChange={url => setForm(f => ({ ...f, image: url }))}
+          />
 
-        {/* Language tabs */}
-        <div className="flex gap-1 px-6 pb-2">
-          <button
-            onClick={() => setTab('fr')}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
-              isFr ? 'bg-[#B89B5E] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-            }`}
-          >🇫🇷 Français</button>
-          <button
-            onClick={() => setTab('en')}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
-              !isFr ? 'bg-[#B89B5E] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-            }`}
-          >🇬🇧 English</button>
-        </div>
+          {/* Icon selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block">Icon (Lucide name)</label>
+            <select value={form.iconName} onChange={e => setForm(f => ({ ...f, iconName: e.target.value }))} className="input w-full">
+              {ICONS.map(i => <option key={i}>{i}</option>)}
+            </select>
+          </div>
 
-        <div className="px-6 pb-5 space-y-4">
-          {isFr ? (
-            <>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Titre (FR)</label>
-                <input
-                  value={form.title}
-                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="input w-full" placeholder="ex: Conception architecturale"
-                />
+          {/* Language tabs */}
+          <div>
+            <div className="flex gap-1 mb-4">
+              <button
+                onClick={() => setTab('fr')}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
+                  isFr ? 'bg-[#B89B5E] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >🇫🇷 Français</button>
+              <button
+                onClick={() => setTab('en')}
+                className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
+                  !isFr ? 'bg-[#B89B5E] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >🇬🇧 English</button>
+            </div>
+
+            {isFr ? (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Titre (FR)</label>
+                  <input
+                    value={form.title}
+                    onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                    className="input w-full" placeholder="ex: Conception architecturale"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description (FR)</label>
+                  <textarea
+                    value={form.description}
+                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                    className="input w-full resize-none" rows={3}
+                    placeholder="Description en français..."
+                  />
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description (FR)</label>
-                <textarea
-                  value={form.description}
-                  onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="input w-full resize-none" rows={3}
-                  placeholder="Description en français..."
-                />
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Title (EN)</label>
+                  <input
+                    value={form.title_en ?? ''}
+                    onChange={e => setForm(f => ({ ...f, title_en: e.target.value }))}
+                    className="input w-full" placeholder="e.g. Architectural Design"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description (EN)</label>
+                  <textarea
+                    value={form.description_en ?? ''}
+                    onChange={e => setForm(f => ({ ...f, description_en: e.target.value }))}
+                    className="input w-full resize-none" rows={3}
+                    placeholder="Description in English..."
+                  />
+                </div>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Title (EN)</label>
-                <input
-                  value={form.title_en ?? ''}
-                  onChange={e => setForm(f => ({ ...f, title_en: e.target.value }))}
-                  className="input w-full" placeholder="e.g. Architectural Design"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description (EN)</label>
-                <textarea
-                  value={form.description_en ?? ''}
-                  onChange={e => setForm(f => ({ ...f, description_en: e.target.value }))}
-                  className="input w-full resize-none" rows={3}
-                  placeholder="Description in English..."
-                />
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">
@@ -156,6 +269,8 @@ function Modal({ service, onClose, onSaved }: { service: Service | null; onClose
     </div>
   );
 }
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
@@ -182,25 +297,27 @@ export default function Services() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold text-[#1F1F1F]">Services</h2>
-          <p className="text-xs text-gray-400 mt-0.5">Click ✏️ to edit title &amp; description in French and English</p>
+          <p className="text-xs text-gray-400 mt-0.5">Click ✏️ to edit — drag & drop image inside the edit panel</p>
         </div>
         <button onClick={() => setEditing('new')} className="btn-gold flex items-center gap-1.5"><Plus size={15} /> New Service</button>
       </div>
+
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <table className="w-full text-sm">
           <thead><tr className="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wide">
             <th className="px-3 py-3 w-8" />
+            <th className="px-3 py-3 w-12">Img</th>
             <th className="px-3 py-3 text-left">Icon</th>
             <th className="px-3 py-3 text-left">Title ({lang === 'en' ? 'EN' : 'FR'})</th>
             <th className="px-3 py-3 text-left hidden md:table-cell">Description</th>
-            <th className="px-3 py-3 text-right">EN ✓</th>
+            <th className="px-3 py-3 text-center">EN ✓</th>
             <th className="px-3 py-3" />
           </tr></thead>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={services.map(s => s.id)} strategy={verticalListSortingStrategy}>
               <tbody>
                 {services.length === 0
-                  ? <tr><td colSpan={6} className="text-center text-gray-400 text-sm py-12">No services yet</td></tr>
+                  ? <tr><td colSpan={7} className="text-center text-gray-400 text-sm py-12">No services yet</td></tr>
                   : services.map(s => (
                     <SortableRow key={s.id} service={s} onEdit={setEditing} onDelete={setConfirm}
                       displayTitle={lang === 'en' ? (s.title_en || s.title) : s.title}
