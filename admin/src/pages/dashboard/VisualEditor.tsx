@@ -245,7 +245,7 @@ export default function VisualEditor() {
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-gray-400 mt-4">Gérez les services dans la section Réalisations → Services</p>
+          <p className="text-center text-xs text-gray-400 mt-4">Edit individual services in <strong>Content → Services</strong> (pencil icon on each row)</p>
         </section>
 
         {/* Portfolio section */}
