@@ -990,54 +990,60 @@ function ProcessSection() {
           <GoldRule text={lang === 'en' ? 'Our Method' : 'Notre méthode'} />
           <h2 className="text-6xl md:text-7xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{lang === 'en' ? 'Our Working Method' : 'Notre Méthode de Travail'}</h2>
         </FadeIn>
-        <div className="relative">
-          {/* Central vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px hidden lg:block" style={{ backgroundColor: "#DDD7D0", transform: "translateX(-50%)" }} />
 
-          <div className="space-y-8 lg:space-y-0">
+        {/* ── Mobile: simple stacked cards (hidden on lg+) ── */}
+        <div className="lg:hidden space-y-4">
+          {steps.map((step, i) => (
+            <FadeIn key={step.n} delay={i * 0.08}>
+              <div className="bg-white rounded-2xl p-6 border border-[#DDD7D0]">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0" style={{ borderColor: GOLD }}>
+                    <div className="text-[9px] font-bold" style={{ color: GOLD }}>{i + 1}</div>
+                  </div>
+                  <div className="text-[10px] tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
+                </div>
+                <h3 className="text-xl text-[#1F1F1F] mb-2 pl-11" style={{ fontFamily: FD }}>{step.title}</h3>
+                <p className="text-xs text-[#4A4A4A] leading-loose pl-11" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+
+        {/* ── Desktop: alternating timeline (hidden below lg) ── */}
+        <div className="hidden lg:block relative">
+          <div className="absolute left-1/2 top-0 bottom-0 w-px" style={{ backgroundColor: "#DDD7D0", transform: "translateX(-50%)" }} />
+          <div>
             {steps.map((step, i) => {
               const even = i % 2 === 0;
               return (
-                <FadeIn key={step.n} delay={i * 0.1} className="lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-12">
-                  {/* Left slot */}
-                  <div className={`${even ? "lg:text-right" : "lg:order-2"}`}>
-                    {even ? (
-                      <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
-                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
-                        <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
-                        <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  {/* Centre dot */}
-                  <div className="hidden lg:flex items-center justify-center relative">
-                    <div className="absolute w-9 h-9 rounded-full border-2 flex items-center justify-center bg-white z-10"
-                      style={{ borderColor: GOLD }}>
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: GOLD }} />
+                <FadeIn key={step.n} delay={i * 0.1}>
+                  <div className="grid grid-cols-[1fr_64px_1fr] gap-0 mb-12 items-center">
+                    {/* Left slot */}
+                    <div className="pr-8 text-right">
+                      {even && (
+                        <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
+                          <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
+                          <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
+                          <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Right slot */}
-                  <div className={`${!even ? "" : "lg:order-2"} mt-4 lg:mt-0`}>
-                    {!even ? (
-                      <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
-                        <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
-                        <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
-                        <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
+                    {/* Centre dot */}
+                    <div className="flex items-center justify-center z-10">
+                      <div className="w-9 h-9 rounded-full border-2 flex items-center justify-center bg-white" style={{ borderColor: GOLD }}>
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: GOLD }} />
                       </div>
-                    ) : null}
-                  </div>
-
-                  {/* Mobile card */}
-                  <div className="lg:hidden bg-white rounded-2xl p-6 border border-[#DDD7D0]">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0" style={{ borderColor: GOLD }}>
-                        <div className="text-[9px] font-bold" style={{ color: GOLD }}>{i + 1}</div>
-                      </div>
-                      <h3 className="text-lg text-[#1F1F1F]" style={{ fontFamily: FD }}>{step.title}</h3>
                     </div>
-                    <p className="text-xs text-[#4A4A4A] leading-loose pl-11" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
+                    {/* Right slot */}
+                    <div className="pl-8">
+                      {!even && (
+                        <div className="bg-white rounded-2xl p-7 border border-[#DDD7D0] hover:border-[#B89B5E]/40 hover:shadow-md transition-all">
+                          <div className="text-[10px] mb-3 tracking-[0.35em] uppercase" style={{ fontFamily: FB, color: GOLD }}>{lang === 'en' ? 'Step' : 'Étape'} {step.n}</div>
+                          <h3 className="text-3xl text-[#1F1F1F] mb-3" style={{ fontFamily: FD }}>{step.title}</h3>
+                          <p className="text-sm text-[#4A4A4A] leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{step.desc}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </FadeIn>
               );
@@ -1048,6 +1054,7 @@ function ProcessSection() {
     </section>
   );
 }
+
 
 // ─── Instagram Preview ────────────────────────────────────────────────────────
 
