@@ -67,6 +67,7 @@ const defaultContent: SiteContent = {
   portfolioTitle: "Nos Réalisations", portfolioSubtitle: "Une sélection de projets réalisés avec passion, rigueur et expertise.",
   contactTitle: "Contactez-nous", contactSubtitle: "Parlons de votre projet.",
   navLabels: { accueil: "Accueil", about: "À propos", services: "Services", domaines: "Domaines", portfolio: "Réalisations", contact: "Contact" },
+  navLabels_en: { accueil: "Home", about: "About", services: "Services", domaines: "Sectors", portfolio: "Portfolio", contact: "Contact" },
   instagramUrl: "https://www.instagram.com/2m.archi",
   facebookUrl: "https://www.facebook.com/share/1GnDe6Dn3Q/?mibextid=wwXIfr",
   linkedinUrl: "#", pinterestUrl: "#",

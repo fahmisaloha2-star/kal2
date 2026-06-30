@@ -7,10 +7,12 @@ interface SiteContent {
   heroTitle: string; heroTitle_en?: string;
   heroTagline: string; heroTagline_en?: string;
   heroDescription: string; heroDescription_en?: string;
+  heroImage?: string;
   aboutTitle: string; aboutTitle_en?: string;
   aboutBody1: string; aboutBody1_en?: string;
   aboutBody2: string; aboutBody2_en?: string;
   aboutBody3: string; aboutBody3_en?: string;
+  aboutImage?: string;
   servicesTitle: string; servicesTitle_en?: string;
   servicesSubtitle: string; servicesSubtitle_en?: string;
   portfolioTitle: string; portfolioTitle_en?: string;
@@ -18,6 +20,7 @@ interface SiteContent {
   beforeAfterBefore: string; beforeAfterAfter: string;
   contactTitle: string; contactTitle_en?: string;
   contactSubtitle: string; contactSubtitle_en?: string;
+  instagramImages?: string[];
 }
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string).replace('/api', '');
@@ -29,6 +32,7 @@ const TABS = [
   { key: 'services', label: 'Services' },
   { key: 'portfolio', label: 'Réalisations' },
   { key: 'contact', label: 'Contact' },
+  { key: 'instagram', label: 'Instagram' },
 ] as const;
 type Tab = typeof TABS[number]['key'];
 
@@ -84,7 +88,7 @@ function ImageUpload({ value, onChange, label }: { value: string; onChange: (url
 
 export default function Content() {
   const { lang } = useAdminLang();
-  const [content, setContent] = useState<SiteContent>({
+  const [content, setContent] = useState<SiteContent & { instagramImages: string[] }>({
     heroTitle: '', heroTagline: '', heroDescription: '',
     heroTitle_en: '', heroTagline_en: '', heroDescription_en: '',
     aboutTitle: '', aboutBody1: '', aboutBody2: '', aboutBody3: '',
@@ -95,12 +99,26 @@ export default function Content() {
     portfolioTitle_en: '', portfolioSubtitle_en: '',
     contactTitle: '', contactSubtitle: '',
     contactTitle_en: '', contactSubtitle_en: '',
+    instagramImages: ['', '', '', '', '', ''],
   });
   const [activeTab, setActiveTab] = useState<Tab>('hero');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => { api.getContent().then(c => setContent(c)); }, []);
+  useEffect(() => {
+    api.getContent().then(c => {
+      setContent(prev => ({ ...prev, ...c, instagramImages: c.instagramImages?.length ? c.instagramImages : ['', '', '', '', '', ''] }));
+    });
+  }, []);
+
+  function setInstaImg(idx: number, url: string) {
+    setContent(prev => {
+      const imgs = [...(prev.instagramImages || ['', '', '', '', '', ''])];
+      imgs[idx] = url;
+      return { ...prev, instagramImages: imgs };
+    });
+    setSaved(false);
+  }
 
   function set(k: keyof SiteContent, v: string) {
     setContent(prev => ({ ...prev, [k]: v }));
@@ -158,8 +176,11 @@ export default function Content() {
             <Field label="Titre principal">{inp('heroTitle')}</Field>
             <Field label="Tagline">{inp('heroTagline')}</Field>
             <Field label="Description">{ta('heroDescription', 3)}</Field>
+            <div className="pt-2">
+              <ImageUpload label="Image Accueil (Hero)" value={content.heroImage || ''} onChange={v => set('heroImage', v)} />
+            </div>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={lang === 'en' ? { heroTitle_en: content.heroTitle_en, heroTagline_en: content.heroTagline_en, heroDescription_en: content.heroDescription_en } : { heroTitle: content.heroTitle, heroTagline: content.heroTagline, heroDescription: content.heroDescription }} />
+              <SaveBtn fields={lang === 'en' ? { heroTitle_en: content.heroTitle_en, heroTagline_en: content.heroTagline_en, heroDescription_en: content.heroDescription_en } : { heroTitle: content.heroTitle, heroTagline: content.heroTagline, heroDescription: content.heroDescription, heroImage: content.heroImage }} />
             </div>
           </>
         )}
@@ -169,8 +190,11 @@ export default function Content() {
             <Field label="Paragraphe 1">{ta('aboutBody1', 3)}</Field>
             <Field label="Paragraphe 2">{ta('aboutBody2', 3)}</Field>
             <Field label="Paragraphe 3 (mission)">{ta('aboutBody3', 3)}</Field>
+            <div className="pt-2">
+              <ImageUpload label="Image section À propos" value={content.aboutImage || ''} onChange={v => set('aboutImage', v)} />
+            </div>
             <div className="flex justify-end pt-2">
-              <SaveBtn fields={lang === 'en' ? { aboutTitle_en: content.aboutTitle_en, aboutBody1_en: content.aboutBody1_en, aboutBody2_en: content.aboutBody2_en, aboutBody3_en: content.aboutBody3_en } : { aboutTitle: content.aboutTitle, aboutBody1: content.aboutBody1, aboutBody2: content.aboutBody2, aboutBody3: content.aboutBody3 }} />
+              <SaveBtn fields={lang === 'en' ? { aboutTitle_en: content.aboutTitle_en, aboutBody1_en: content.aboutBody1_en, aboutBody2_en: content.aboutBody2_en, aboutBody3_en: content.aboutBody3_en } : { aboutTitle: content.aboutTitle, aboutBody1: content.aboutBody1, aboutBody2: content.aboutBody2, aboutBody3: content.aboutBody3, aboutImage: content.aboutImage }} />
             </div>
           </>
         )}
@@ -202,6 +226,28 @@ export default function Content() {
             <Field label="Sous-titre">{inp('contactSubtitle')}</Field>
             <div className="flex justify-end pt-2">
               <SaveBtn fields={lang === 'en' ? { contactTitle_en: content.contactTitle_en, contactSubtitle_en: content.contactSubtitle_en } : { contactTitle: content.contactTitle, contactSubtitle: content.contactSubtitle }} />
+            </div>
+          </>
+        )}
+        {activeTab === 'instagram' && (
+
+          <>
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 mb-1">Photos Instagram</h3>
+              <p className="text-xs text-gray-400">Ces 6 images s'affichent dans la section Instagram du site. Uploadez vos propres photos.</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {(content.instagramImages || ['','','','','','']).map((img, idx) => (
+                <ImageUpload
+                  key={idx}
+                  label={`Photo ${idx + 1}`}
+                  value={img}
+                  onChange={url => setInstaImg(idx, url)}
+                />
+              ))}
+            </div>
+            <div className="flex justify-end pt-2">
+              <SaveBtn fields={{ instagramImages: content.instagramImages }} />
             </div>
           </>
         )}

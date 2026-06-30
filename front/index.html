@@ -3,55 +3,72 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2M ARCHI — Studio d'architecture d'intérieur et design à Tunis</title>
-    <meta name="description" content="2M ARCHI — Studio d'architecture d'intérieur et design. Conception 2D/3D, décoration, mobilier sur mesure et suivi de chantier en Tunisie." />
-    <link rel="canonical" href="%VITE_PUBLIC_URL%/" />
-    <meta name="google-site-verification" content="%VITE_GOOGLE_VERIFICATION%" />
+    <title>2M ARCHI — Studio d'architecture d'intérieur et design à Hammamet tunis</title>
+    <meta name="description" content="2M ARCHI — Studio d'architecture d'intérieur et design en Tunisie. Conception 2D/3D, décoration, mobilier sur mesure, suivi de chantier. Projets résidentiels et commerciaux à Tunis, Hammamet, La Marsa." />
+    <meta name="keywords" content="architecture intérieur Tunisie, architecte intérieur Tunis, design intérieur Hammamet, décoration intérieur Tunis, plans 2D 3D Tunisie, aménagement intérieur, rénovation intérieure Tunisie, mobilier sur mesure Tunis, 2M ARCHI, 2MARCHI" />
+    <link rel="canonical" href="https://2marchi.com/" />
+    <meta name="google-site-verification" content="J8IA0Bi25gHdDXLpDWgUO5C-VqX9ukA3XPSCrD1QkqA" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="2M ARCHI — Studio d'architecture d'intérieur et design" />
+    <meta property="og:title" content="2M ARCHI — Studio d'architecture d'intérieur et design à Hammamet tunis" />
     <meta property="og:description" content="Studio d'architecture d'intérieur et design : conception 2D/3D, décoration et suivi de chantier." />
-    <meta property="og:image" content="%VITE_PUBLIC_URL%/og-image.jpg" />
-    <meta property="og:url" content="%VITE_PUBLIC_URL%/" />
+    <meta property="og:image" content="https://2marchi.com/og-image.jpg" />
+    <meta property="og:url" content="https://2marchi.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_FR" />
 
     <!-- Twitter/X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="2M ARCHI — Studio d'architecture d'intérieur et design" />
+    <meta name="twitter:title" content="2M ARCHI — Studio d'architecture d'intérieur et design à Hammamet tunis" />
     <meta name="twitter:description" content="Studio d'architecture d'intérieur et design en Tunisie." />
-    <meta name="twitter:image" content="%VITE_PUBLIC_URL%/og-image.jpg" />
+    <meta name="twitter:image" content="https://2marchi.com/og-image.jpg" />
 
-    <!-- Google Analytics 4 (only loads if ID is set) -->
+    <!-- Resource hints: Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Load font stylesheet non-render-blocking -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" /></noscript>
+
+    <!-- Preload LCP hero image -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1200&h=1600&fit=crop&auto=format" fetchpriority="high" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/logo-new.png" sizes="any" />
+    <link rel="apple-touch-icon" href="/logo-new.png" />
+    <meta name="theme-color" content="#1F1F1F" />
+
+    <!-- Critical inline CSS — prevents FOUC and covers above-the-fold layout -->
+    <style>
+      html, body { height: 100%; margin: 0; background: #F7F5F2; }
+      #root { height: 100%; }
+      /* Prevent layout shift while fonts load */
+      body { font-family: 'Inter', system-ui, sans-serif; }
+      h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; }
+      /* Spinner shown while React loads */
+      #root:empty::after {
+        content: '';
+        position: fixed; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+      }
+    </style>
+
+    <!-- Google Analytics 4 — deferred so it never blocks rendering -->
     <script>
-      const GA_ID = '%VITE_GA_ID%';
-      if (GA_ID && GA_ID !== '' && GA_ID.indexOf('VITE_') === -1) {
-        const s = document.createElement('script');
-        s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+      window.addEventListener('load', function() {
+        var GA_ID = 'G-YG3LSXTGD8';
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
         s.async = true;
         document.head.appendChild(s);
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         window.gtag = gtag;
         gtag('js', new Date());
-        gtag('config', GA_ID);
-      }
+        gtag('config', GA_ID, { send_page_view: true });
+      });
     </script>
-
-    <!-- Font preload -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" />
-
-    <!-- PWA -->
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#1F1F1F" />
-
-    <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
   </head>
 
   <body>

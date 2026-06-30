@@ -6,7 +6,7 @@ import {
   Menu, X, ArrowRight, Phone, Mail, MapPin,
   PenTool, Box, Palette, FileText, HardHat, Eye,
   Paintbrush, Layers, Hammer, ShoppingBag,
-  ChevronDown, ChevronLeft, ChevronRight, Send, Check,
+  ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Send, Check,
   Instagram, Facebook, Linkedin, ZoomIn,
   Home, Building2, Package, Briefcase, Store, Dumbbell,
   Sparkles, Utensils, Coffee, Tag, LayoutTemplate, Stethoscope,
@@ -124,7 +124,7 @@ function WhatsAppIcon({ size = 24 }: { size?: number }) {
 
 // ─── Before/After Slider ──────────────────────────────────────────────────────
 
-function BeforeAfterSlider({ before, after }: { before: string; after: string }) {
+function BeforeAfterSlider({ before, after, lang }: { before: string; after: string; lang?: string }) {
   const [pos, setPos] = useState(50);
   return (
     <div className="relative w-full h-72 md:h-96 overflow-hidden select-none rounded-2xl" style={{ cursor: "ew-resize" }}>
@@ -140,8 +140,8 @@ function BeforeAfterSlider({ before, after }: { before: string; after: string })
         </div>
       </div>
       {/* Labels */}
-      <span className="absolute top-3 left-3 text-[9px] tracking-[0.2em] uppercase bg-black/40 text-white px-2 py-1 rounded" style={{ fontFamily: FB }}>Avant</span>
-      <span className="absolute top-3 right-3 text-[9px] tracking-[0.2em] uppercase bg-black/40 text-white px-2 py-1 rounded" style={{ fontFamily: FB }}>Après</span>
+      <span className="absolute top-3 left-3 text-[9px] tracking-[0.2em] uppercase bg-black/40 text-white px-2 py-1 rounded" style={{ fontFamily: FB }}>{lang === 'en' ? 'Before' : 'Avant'}</span>
+      <span className="absolute top-3 right-3 text-[9px] tracking-[0.2em] uppercase bg-black/40 text-white px-2 py-1 rounded" style={{ fontFamily: FB }}>{lang === 'en' ? 'After' : 'Après'}</span>
       <input type="range" min="5" max="95" value={pos} onChange={e => setPos(Number(e.target.value))}
         aria-label="Curseur avant / après"
         className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize" />
@@ -531,9 +531,11 @@ function HeroSection() {
       <div className="relative order-1 lg:order-2 h-[60vw] sm:h-[50vw] lg:h-auto overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: imgY, scale: 1.12 }}>
           <motion.img
-            src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1200&h=1600&fit=crop&auto=format"
+            src={((content as any).heroImage) || "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=1200&h=1600&fit=crop&auto=format"}
             alt="Réalisation 2M ARCHI"
             className="w-full h-full object-cover object-center"
+            fetchPriority="high"
+            decoding="async"
             initial={{ scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: "easeOut" }}
           />
         </motion.div>
@@ -683,7 +685,7 @@ function AboutSection() {
         <div className="grid lg:grid-cols-2 gap-16 xl:gap-24 items-center">
           <FadeIn direction="right" className="relative">
             <div className="absolute -top-4 -right-4 w-full h-full rounded-2xl border border-[#DDD7D0]" />
-            <img src="https://images.unsplash.com/photo-1598016677484-ad34c3fd766e?w=700&h=880&fit=crop&auto=format"
+            <img src={((content as any).aboutImage) || "https://images.unsplash.com/photo-1598016677484-ad34c3fd766e?w=700&h=880&fit=crop&auto=format"}
               alt="2M ARCHI studio workspace" loading="lazy" className="w-full h-[540px] object-cover rounded-2xl relative z-10" />
             <div className="absolute bottom-8 -left-6 z-20 bg-white rounded-xl p-5 shadow-lg border border-[#DDD7D0]">
               <div className="text-xl text-[#1F1F1F]" style={{ fontFamily: FD }}>2M ARCHI</div>
@@ -800,7 +802,7 @@ function ServicesSection() {
 const DOMAINES = [
   { icon: Home,           label: "Maisons et Villas" },
   { icon: Building2,      label: "Appartements et Lofts" },
-  { icon: Package,        label: "Espaces modulaires et conteneurs" },
+  { icon: Package,        label: "Espaces où habitations modulaires en conteneurs maritimes" },
   { icon: Briefcase,      label: "Bureaux et espaces professionnels" },
   { icon: Store,          label: "Locaux commerciaux" },
   { icon: Dumbbell,       label: "Salles de sport" },
@@ -838,7 +840,7 @@ function DomainesSection() {
                   {lang === 'en' ? (
                     label === "Maisons et Villas" ? "Houses & Villas" :
                     label === "Appartements et Lofts" ? "Apartments & Lofts" :
-                    label === "Espaces modulaires et conteneurs" ? "Modular Spaces & Containers" :
+                    label === "Espaces où habitations modulaires en conteneurs maritimes" ? "Modular & Maritime Container Spaces" :
                     label === "Bureaux et espaces professionnels" ? "Offices & Workspaces" :
                     label === "Locaux commerciaux" ? "Commercial Spaces" :
                     label === "Salles de sport" ? "Gyms & Fitness Centers" :
@@ -931,7 +933,7 @@ function PortfolioSection() {
                 {p.featured && (
                   <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[8px] tracking-[0.18em] uppercase text-white"
                     style={{ fontFamily: FB, fontWeight: 600, backgroundColor: GOLD }}>
-                    À la une
+                    {lang === 'en' ? 'Featured' : 'À la une'}
                   </div>
                 )}
               </div>
@@ -942,12 +944,12 @@ function PortfolioSection() {
         {/* Before/After */}
         <div className="mt-24">
           <FadeIn className="text-center mb-10">
-            <GoldRule text="Transformation" />
-            <h3 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>Avant / Après</h3>
-            <p className="text-sm text-[#6D6D6D] mt-3" style={{ fontFamily: FB, fontWeight: 300 }}>Glissez pour voir la transformation complète</p>
+            <GoldRule text={lang === 'en' ? 'Transformation' : 'Transformation'} />
+            <h3 className="text-5xl text-[#1F1F1F]" style={{ fontFamily: FD }}>{lang === 'en' ? 'Before / After' : 'Avant / Après'}</h3>
+            <p className="text-sm text-[#6D6D6D] mt-3" style={{ fontFamily: FB, fontWeight: 300 }}>{lang === 'en' ? 'Slide to see the full transformation' : 'Glissez pour voir la transformation complète'}</p>
           </FadeIn>
           <FadeIn>
-            <BeforeAfterSlider before={content.beforeAfterBefore} after={content.beforeAfterAfter} />
+            <BeforeAfterSlider before={content.beforeAfterBefore} after={content.beforeAfterAfter} lang={lang} />
           </FadeIn>
         </div>
       </div>
@@ -1058,7 +1060,7 @@ function ProcessSection() {
 
 // ─── Instagram Preview ────────────────────────────────────────────────────────
 
-const INSTA_IMGS = [
+const DEFAULT_INSTA_IMGS = [
   "https://images.unsplash.com/photo-1776673687936-65e63a5a3e05?w=400&h=400&fit=crop&auto=format",
   "https://images.unsplash.com/photo-1614628079765-6c164f4bd970?w=400&h=400&fit=crop&auto=format",
   "https://images.unsplash.com/photo-1628745423010-bfb4df95f3eb?w=400&h=400&fit=crop&auto=format",
@@ -1070,6 +1072,10 @@ const INSTA_IMGS = [
 function InstagramSection() {
   const { state: { content } } = useStore();
   const { lang } = useI18n();
+  // Use admin-managed images if available, otherwise fall back to defaults
+  const instaImgs: string[] = (content as any).instagramImages?.length
+    ? (content as any).instagramImages
+    : DEFAULT_INSTA_IMGS;
   return (
     <section className="py-24" style={{ backgroundColor: "#EFEAE4" }}>
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -1079,7 +1085,7 @@ function InstagramSection() {
           <p className="text-xs text-[#6D6D6D]" style={{ fontFamily: FB }}>@2m.archi</p>
         </FadeIn>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8">
-          {INSTA_IMGS.map((src, i) => (
+          {instaImgs.map((src, i) => (
             <FadeIn key={i} delay={i * 0.07} className="aspect-square overflow-hidden rounded-xl">
               <a href={content.instagramUrl} target="_blank" rel="noopener noreferrer"
                 onClick={() => trackEvent("social_click", { platform: "Instagram" })}
@@ -1294,7 +1300,7 @@ function Footer() {
             <Link to="/" onClick={() => window.scrollTo(0,0)} className="inline-block mb-4 hover:opacity-80 transition-opacity">
               <img src="/logo-new.png" alt="2M ARCHI" className="h-12 w-auto object-contain" />
             </Link>
-            <p className="text-xs text-white/40 leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>Des espaces uniques où esthétique, fonctionnalité et innovation se rencontrent.</p>
+            <p className="text-xs text-white/40 leading-loose" style={{ fontFamily: FB, fontWeight: 300 }}>{lang === 'en' ? "Unique spaces where aesthetics, functionality, and innovation meet." : "Des espaces uniques où esthétique, fonctionnalité et innovation se rencontrent."}</p>
           </div>
           <div>
             <div className="text-[8px] tracking-[0.32em] uppercase mb-6" style={{ fontFamily: FB, color: GOLD }}>Navigation</div>
@@ -1313,7 +1319,7 @@ function Footer() {
           <div>
             <div className="text-[8px] tracking-[0.32em] uppercase mb-6" style={{ fontFamily: FB, color: GOLD }}>Services</div>
             <ul className="space-y-3">
-              {["Plans 2D","Modélisation 3D","Décoration & Design","Dossier Technique","Suivi de Chantier"].map(s => (
+              {(lang === 'en' ? ["2D Plans", "3D Modeling", "Decoration & Design", "Technical File", "Site Supervision"] : ["Plans 2D","Modélisation 3D","Décoration & Design","Dossier Technique","Suivi de Chantier"]).map(s => (
                 <li key={s}><Link to="/services" onClick={() => window.scrollTo(0,0)} className="text-xs text-white/40 hover:text-white transition-colors text-left" style={{ fontFamily: FB, fontWeight: 300 }}>{s}</Link></li>
               ))}
             </ul>
@@ -1335,7 +1341,7 @@ function Footer() {
           </div>
         </div>
         <div className="border-t border-white/8 pt-7 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[9px] text-white/25 tracking-[0.12em]" style={{ fontFamily: FB }}>© 2026 2M ARCHI. Tous droits réservés.</p>
+          <p className="text-[9px] text-white/25 tracking-[0.12em]" style={{ fontFamily: FB }}>{lang === 'en' ? "© 2026 2M ARCHI. All rights reserved." : "© 2026 2M ARCHI. Tous droits réservés."}</p>
           <p className="text-[9px] text-white/18" style={{ fontFamily: FB }}>{content.address}</p>
         </div>
       </div>
@@ -1389,6 +1395,108 @@ function Contact() {
   );
 }
 
+// ─── Back To Top ─────────────────────────────────────────────────────────────
+
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Retour en haut"
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+          style={{ backgroundColor: GOLD, color: 'white' }}
+        >
+          <ChevronUp size={22} />
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─── Cookie Consent Banner ────────────────────────────────────────────────────
+
+function CookieBanner() {
+  const { lang } = useI18n();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const accepted = localStorage.getItem('cookie-consent');
+    if (!accepted) {
+      // Small delay so it doesn't flash on first render
+      const t = setTimeout(() => setVisible(true), 1200);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  const accept = () => {
+    localStorage.setItem('cookie-consent', 'true');
+    setVisible(false);
+    trackEvent('cookie_consent', { action: 'accept' });
+  };
+
+  const decline = () => {
+    localStorage.setItem('cookie-consent', 'false');
+    setVisible(false);
+    trackEvent('cookie_consent', { action: 'decline' });
+  };
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 80 }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="fixed bottom-0 left-0 right-0 z-[80] px-4 pb-4 sm:px-6 sm:pb-6"
+        >
+          <div
+            className="max-w-4xl mx-auto rounded-2xl shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 sm:p-6"
+            style={{ backgroundColor: '#1F1F1F', border: '1px solid rgba(184,155,94,0.3)' }}
+          >
+            <div className="flex-1">
+              <p className="text-sm text-white/80 leading-relaxed" style={{ fontFamily: FB, fontWeight: 300 }}>
+                {lang === 'en'
+                  ? '🍪 We use cookies to improve your experience and analyse traffic. By accepting, you agree to our use of cookies.'
+                  : '🍪 Nous utilisons des cookies pour améliorer votre expérience et analyser le trafic. En acceptant, vous consentez à leur utilisation.'}
+              </p>
+            </div>
+            <div className="flex gap-3 flex-shrink-0">
+              <button
+                onClick={decline}
+                className="px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all hover:bg-white/10"
+                style={{ fontFamily: FB, fontWeight: 500, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.15)' }}
+              >
+                {lang === 'en' ? 'Decline' : 'Refuser'}
+              </button>
+              <button
+                onClick={accept}
+                className="px-5 py-2 rounded-xl text-xs tracking-widest uppercase text-white transition-all hover:brightness-110 active:scale-95"
+                style={{ fontFamily: FB, fontWeight: 600, backgroundColor: GOLD }}
+              >
+                {lang === 'en' ? 'Accept' : 'Accepter'}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ─── Export ───────────────────────────────────────────────────────────────────
 
 export default function Website() {
@@ -1430,24 +1538,53 @@ export default function Website() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // JSON-LD structured data (LocalBusiness + FAQPage).
+  // JSON-LD structured data (LocalBusiness + InteriorDesigner + FAQPage).
   useEffect(() => {
-    const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL || "";
+    const PUBLIC_URL = "https://2marchi.com";
     const lb = {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
+      "@type": ["LocalBusiness", "InteriorDesigner"],
       "name": "2M ARCHI",
+      "alternateName": "2MARCHI",
       "url": PUBLIC_URL,
-      "logo": `${PUBLIC_URL}/logo.png`,
-      "image": `${PUBLIC_URL}/og-image.jpg`,
-      "description": "Studio d'architecture d'intérieur et design à Tunis",
+      "logo": `${PUBLIC_URL}/logo-new.png`,
+      "image": `${PUBLIC_URL}/logo-2marchi.jpg`,
+      "description": "2M ARCHI est un studio d'architecture d'intérieur et design à Hammamet, Tunisie. Conception 2D/3D, décoration, mobilier sur mesure, suivi de chantier pour projets résidentiels et commerciaux.",
       "telephone": content.phone,
       "email": content.email,
-      "address": { "@type": "PostalAddress", "addressLocality": "Hammamet", "addressCountry": "TN" },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Hammamet",
+        "addressLocality": "Hammamet",
+        "addressRegion": "Nabeul",
+        "addressCountry": "TN"
+      },
       "geo": { "@type": "GeoCoordinates", "latitude": 36.4, "longitude": 10.6 },
-      "sameAs": [content.instagramUrl, content.facebookUrl].filter(u => u && u !== "#"),
+      "areaServed": [
+        { "@type": "City", "name": "Tunis" },
+        { "@type": "City", "name": "Hammamet" },
+        { "@type": "City", "name": "La Marsa" },
+        { "@type": "City", "name": "Carthage" },
+        { "@type": "Country", "name": "Tunisie" }
+      ],
+      "sameAs": [
+        content.instagramUrl,
+        content.facebookUrl,
+      ].filter(u => u && u !== "#"),
       "openingHours": "Mo-Fr 09:00-18:00",
       "priceRange": "$$",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Services d'architecture d'intérieur",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Conception architecturale et plans 2D" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modélisation et visualisation 3D" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Décoration et Design d'intérieur" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Suivi et coordination des travaux" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Mobilier sur mesure" } },
+        ]
+      },
+      "keywords": "architecture intérieur Tunisie, design intérieur Tunis, décoration intérieur Hammamet, plans 2D 3D Tunis, architecte intérieur, aménagement espace, rénovation intérieure Tunisie"
     };
     const faqSchema = {
       "@context": "https://schema.org",
@@ -1458,7 +1595,18 @@ export default function Website() {
         "acceptedAnswer": { "@type": "Answer", "text": f.answer },
       })),
     };
-    const entries: [string, unknown][] = [["lb-schema", lb], ["faq-schema", faqSchema]];
+    const breadcrumb = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": PUBLIC_URL },
+        { "@type": "ListItem", "position": 2, "name": "À propos", "item": `${PUBLIC_URL}/about` },
+        { "@type": "ListItem", "position": 3, "name": "Services", "item": `${PUBLIC_URL}/services` },
+        { "@type": "ListItem", "position": 4, "name": "Réalisations", "item": `${PUBLIC_URL}/portfolio` },
+        { "@type": "ListItem", "position": 5, "name": "Contact", "item": `${PUBLIC_URL}/contact` },
+      ]
+    };
+    const entries: [string, unknown][] = [["lb-schema", lb], ["faq-schema", faqSchema], ["breadcrumb-schema", breadcrumb]];
     entries.forEach(([id]) => document.getElementById(id)?.remove());
     entries.forEach(([id, data]) => {
       const s = document.createElement("script");
@@ -1489,6 +1637,8 @@ export default function Website() {
         </Routes>
       </main>
       <Footer />
+      <BackToTop />
+      <CookieBanner />
     </div>
   );
 }
